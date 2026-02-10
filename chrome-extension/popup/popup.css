@@ -53,6 +53,30 @@ body {
   color: #fff;
 }
 
+.phd-popup__password-wrap {
+  position: relative;
+  display: flex;
+}
+.phd-popup__password-wrap .phd-popup__input {
+  padding-right: 32px;
+}
+.phd-popup__eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  line-height: 1;
+  color: #94a3b8;
+}
+.phd-popup__eye:hover {
+  color: #475569;
+}
+
 .phd-popup__user-bar {
   display: flex;
   align-items: center;

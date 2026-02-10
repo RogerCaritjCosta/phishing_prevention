@@ -15,7 +15,10 @@
         <button class="phd-popup__auth-tab" id="tabRegister">Register</button>
       </div>
       <input type="email" id="authEmail" class="phd-popup__input" placeholder="Email">
-      <input type="password" id="authPassword" class="phd-popup__input" placeholder="Password">
+      <div class="phd-popup__password-wrap">
+        <input type="password" id="authPassword" class="phd-popup__input" placeholder="Password">
+        <button type="button" id="togglePassword" class="phd-popup__eye" title="Show password">&#x1F441;</button>
+      </div>
       <button id="authBtn" class="phd-popup__save">Log in</button>
       <div id="authMsg" class="phd-popup__msg"></div>
     </div>

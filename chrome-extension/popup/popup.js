@@ -135,6 +135,13 @@ authPassword.addEventListener("keydown", (e) => {
   if (e.key === "Enter") authBtn.click();
 });
 
+// ── Toggle password visibility ──────────────────────────
+$("togglePassword").addEventListener("click", () => {
+  const isHidden = authPassword.type === "password";
+  authPassword.type = isHidden ? "text" : "password";
+  $("togglePassword").textContent = isHidden ? "\u25CF" : "\u{1F441}";
+});
+
 // ── Logout ───────────────────────────────────────────────
 logoutBtn.addEventListener("click", async () => {
   await sendMsg("signOut");
