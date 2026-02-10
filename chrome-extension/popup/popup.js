@@ -220,6 +220,7 @@ function notifyGmailTabs() {
 addTrustedBtn.addEventListener("click", () => {
   const email = trustedInput.value.trim().toLowerCase();
   if (!email) return;
+  if (email.includes("+")) { flash("'+' not allowed in email", "err"); return; }
   chrome.storage.sync.get({ trustedSenders: [] }, (items) => {
     const list = items.trustedSenders;
     if (list.includes(email)) { flash("Already trusted", "err"); return; }
