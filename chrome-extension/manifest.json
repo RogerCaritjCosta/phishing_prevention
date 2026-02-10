@@ -11,7 +11,8 @@
     "https://*.onrender.com/*",
     "https://phishing-prevention-1-vqvj.onrender.com/*",
     "https://identitytoolkit.googleapis.com/*",
-    "https://securetoken.googleapis.com/*"
+    "https://securetoken.googleapis.com/*",
+    "https://firestore.googleapis.com/*"
   ],
   "background": {
     "service_worker": "background.js"
