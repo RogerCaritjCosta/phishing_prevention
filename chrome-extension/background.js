@@ -1,5 +1,5 @@
 const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
-const FIREBASE_API_KEY = "BPv2EQEu5V3kNyElzcRDuTTh4WABeLjhOcdigoqZ4aABXh64b95f15pwiRusc5kzMaCRgXHqCjTZypos4qB5tFY";
+const FIREBASE_API_KEY = "AIzaSyA4viSI5AUH7Mpp02k0uj_mUiIk9SuBzEA";
 
 function fetchWithTimeout(url, options, timeoutMs = 60000) {
   return Promise.race([
