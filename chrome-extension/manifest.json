@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "PhishBuster",
+  "version": "1.0.0",
+  "description": "Automatically analyzes emails in Gmail for phishing indicators using a local analysis backend.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "http://localhost:5000/*",
+    "http://127.0.0.1:5000/*",
+    "https://*.onrender.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["lib/api-client.js", "content/gmail-detector.js"],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

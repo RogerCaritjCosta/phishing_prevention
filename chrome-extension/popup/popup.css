@@ -1,0 +1,212 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 300px;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 13px;
+  color: #1e293b;
+  background: #fff;
+}
+
+.phd-popup {
+  padding: 16px;
+}
+
+.phd-popup__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.phd-popup__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.phd-popup__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #94a3b8;
+}
+.phd-popup__dot--ok {
+  background: #22c55e;
+}
+.phd-popup__dot--error {
+  background: #ef4444;
+}
+
+.phd-popup__status-text {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.phd-popup__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.phd-popup__input,
+.phd-popup__select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: #1e293b;
+  outline: none;
+}
+.phd-popup__input:focus,
+.phd-popup__select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.phd-popup__save {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 8px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.phd-popup__save:hover {
+  background: #2563eb;
+}
+
+.phd-popup__msg {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 12px;
+  min-height: 16px;
+}
+.phd-popup__msg--ok {
+  color: #16a34a;
+}
+.phd-popup__msg--err {
+  color: #dc2626;
+}
+
+/* ── Trusted senders ─────────────────────────────────── */
+.phd-popup__section {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.phd-popup__trusted-list {
+  max-height: 120px;
+  overflow-y: auto;
+  margin-bottom: 6px;
+}
+
+.phd-popup__trusted-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #334155;
+  background: #f8fafc;
+  border-radius: 4px;
+  margin-bottom: 3px;
+}
+
+.phd-popup__trusted-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phd-popup__trusted-remove {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.phd-popup__trusted-remove:hover {
+  color: #ef4444;
+}
+
+.phd-popup__trusted-empty {
+  font-size: 11px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.phd-popup__trusted-add {
+  display: flex;
+  gap: 4px;
+}
+
+.phd-popup__trusted-add .phd-popup__input {
+  flex: 1;
+}
+
+.phd-popup__add-btn {
+  background: #22c55e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+}
+.phd-popup__add-btn:hover {
+  background: #16a34a;
+}
+
+.phd-popup__csv-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.phd-popup__csv-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.phd-popup__csv-btn:hover {
+  background: #e2e8f0;
+}
+
+.phd-popup__csv-msg {
+  font-size: 11px;
+  color: #16a34a;
+}

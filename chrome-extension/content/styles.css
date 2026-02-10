@@ -1,0 +1,232 @@
+/* Gmail Phishing Detector — injected styles (phd- prefix) */
+
+/* ── Banner container ────────────────────────────────────── */
+.phd-banner {
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 8px 0 12px 0;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Risk-level colours ──────────────────────────────────── */
+.phd-banner--low {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+.phd-banner--medium {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+}
+.phd-banner--high {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+}
+.phd-banner--critical {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+.phd-banner--trusted {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+.phd-banner--loading {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.phd-banner--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+/* ── Header row ──────────────────────────────────────────── */
+.phd-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.phd-shield {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.phd-title {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.phd-risk-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.phd-risk-badge--low      { background: #dcfce7; color: #166534; }
+.phd-risk-badge--medium   { background: #fef9c3; color: #854d0e; }
+.phd-risk-badge--high     { background: #ffedd5; color: #9a3412; }
+.phd-risk-badge--critical { background: #fee2e2; color: #991b1b; }
+.phd-risk-badge--trusted  { background: #dcfce7; color: #166534; }
+
+.phd-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.phd-toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.phd-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #94a3b8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+.phd-close:hover {
+  color: #475569;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Details section ─────────────────────────────────────── */
+.phd-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.phd-details--hidden {
+  display: none;
+}
+
+.phd-meta {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+/* ── Alarm cards ─────────────────────────────────────────── */
+.phd-alarms {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.phd-alarm {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #94a3b8;
+  font-size: 13px;
+}
+.phd-alarm--info     { border-left-color: #60a5fa; }
+.phd-alarm--low      { border-left-color: #4ade80; }
+.phd-alarm--medium   { border-left-color: #facc15; }
+.phd-alarm--high     { border-left-color: #fb923c; }
+.phd-alarm--critical { border-left-color: #f87171; }
+
+.phd-alarm__title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.phd-alarm__desc {
+  color: #475569;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.phd-alarm__severity {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  float: right;
+  margin-left: 8px;
+}
+.phd-alarm__severity--info     { color: #3b82f6; }
+.phd-alarm__severity--low      { color: #22c55e; }
+.phd-alarm__severity--medium   { color: #eab308; }
+.phd-alarm__severity--high     { color: #f97316; }
+.phd-alarm__severity--critical { color: #ef4444; }
+
+/* ── No alarms ───────────────────────────────────────────── */
+.phd-no-alarms {
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Loading spinner ─────────────────────────────────────── */
+.phd-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e1;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: phd-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes phd-spin {
+  to { transform: rotate(360deg); }
+}
+
+.phd-loading-text {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ── Error banner ────────────────────────────────────────── */
+.phd-error-text {
+  color: #dc2626;
+  font-size: 13px;
+}
+
+.phd-retry {
+  background: none;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: auto;
+}
+.phd-retry:hover {
+  background: #fef2f2;
+}
+
+/* ── Trust sender button ─────────────────────────────────── */
+.phd-trust {
+  background: none;
+  border: 1px solid #22c55e;
+  color: #16a34a;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.phd-trust:hover {
+  background: #f0fdf4;
+}

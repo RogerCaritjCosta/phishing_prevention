@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Email Detector</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-i18n="app_title">Phishing Email Detector</h1>
+            <div class="lang-selector">
+                <label data-i18n="language">Language</label>
+                <select id="lang-select">
+                    <option value="en">English</option>
+                    <option value="es">Castellano</option>
+                    <option value="ca">Català</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="text" data-i18n="paste_tab">Paste Text</button>
+            <button class="tab" data-tab="eml" data-i18n="upload_tab">Upload .eml</button>
+        </div>
+
+        <div class="tab-content active" id="tab-text">
+            <textarea id="email-text" rows="12" data-i18n-placeholder="placeholder"
+                      placeholder="Paste the suspicious email here..."></textarea>
+            <button id="analyze-text-btn" class="btn-primary" data-i18n="analyze_btn">Analyze</button>
+        </div>
+
+        <div class="tab-content" id="tab-eml">
+            <div class="drop-zone" id="drop-zone">
+                <p data-i18n="drop_text">Drop .eml file here or click to select</p>
+                <input type="file" id="eml-file" accept=".eml" hidden>
+            </div>
+            <div id="file-name" class="file-name"></div>
+            <button id="analyze-eml-btn" class="btn-primary" data-i18n="upload_btn" disabled>Upload & Analyze</button>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <span data-i18n="analyzing">Analyzing...</span>
+        </div>
+
+        <div id="results" class="results hidden">
+            <h2 data-i18n="results_title">Analysis Results</h2>
+            <div id="risk-badge" class="risk-badge"></div>
+            <h3 data-i18n="alarms_title">Alarms</h3>
+            <div id="alarms-list"></div>
+        </div>
+
+        <div id="error-msg" class="error hidden"></div>
+    </div>
+
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
