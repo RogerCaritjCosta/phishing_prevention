@@ -82,24 +82,14 @@ async function firestoreSet(path, fields, token) {
   return resp.json();
 }
 
-let _baseLimitCache = { value: 10, fetchedAt: 0 };
-const BASE_LIMIT_CACHE_MS = 5 * 60 * 1000; // refresh from Firestore every 5 min
-
-async function fetchUserBaseLimit(forceRefresh = false) {
-  // Return cached if fresh enough
-  if (!forceRefresh && _baseLimitCache.fetchedAt > 0 &&
-      Date.now() - _baseLimitCache.fetchedAt < BASE_LIMIT_CACHE_MS) {
-    return _baseLimitCache.value;
-  }
-
+async function fetchUserBaseLimit() {
   try {
     const token = await getAuthToken();
     const { userUid } = await chrome.storage.local.get("userUid");
-    if (!userUid) return _baseLimitCache.value;
+    if (!userUid) return 10;
     const doc = await firestoreGet(`users/${userUid}`, token);
     if (doc && doc.fields && doc.fields.dailyLimit) {
       const limit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
-      _baseLimitCache = { value: limit, fetchedAt: Date.now() };
       await chrome.storage.sync.set({ userBaseLimit: limit });
       return limit;
     }
@@ -117,14 +107,12 @@ async function updateFirestoreLimit(newLimit) {
   await firestoreSet(`users/${userUid}`, {
     dailyLimit: { integerValue: String(newLimit) },
   }, token);
-  _baseLimitCache = { value: newLimit, fetchedAt: Date.now() };
 }
 
 async function createUserDoc(uid, token) {
   await firestoreSet(`users/${uid}`, {
     dailyLimit: { integerValue: "10" },
   }, token);
-  _baseLimitCache = { value: 10, fetchedAt: Date.now() };
 }
 
 // ── Daily limit ─────────────────────────────────────────
@@ -169,8 +157,7 @@ async function handleAddMoreAnalyses() {
   const newLimit = usage.base + newExtra;
   await chrome.storage.sync.set({ dailyExtra: newExtra });
   // Update Firestore with new total limit
-  try { await updateFirestoreLimit(newLimit); } catch {}
-  updateBadge(usage.count, newLimit);
+  try { await updateFirestoreLimit(newLimit); } catch {}  updateBadge(usage.count, newLimit);
   return { count: usage.count, limit: newLimit };
 }
 
