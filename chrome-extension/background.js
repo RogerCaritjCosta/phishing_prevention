@@ -115,7 +115,7 @@ async function createUserDoc(uid, token) {
   }, token);
 }
 
-// ── Daily limit ─────────────────────────────────────────
+// ── Daily usage (persisted in Firestore) ────────────────
 
 const ADD_MORE_AMOUNT = 15;
 
@@ -123,41 +123,54 @@ function getTodayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
-async function getDailyUsage() {
-  // Always try to get fresh base limit from Firestore (cached 5 min)
-  const baseLimit = await fetchUserBaseLimit();
-
-  const { dailyCount = 0, dailyDate = "", dailyExtra = 0 } =
-    await chrome.storage.sync.get(["dailyCount", "dailyDate", "dailyExtra"]);
-  const today = getTodayStr();
-  if (dailyDate !== today) {
-    await chrome.storage.sync.set({
-      dailyCount: 0, dailyDate: today, dailyExtra: 0, userBaseLimit: baseLimit,
-    });
-    updateBadge(0, baseLimit);
-    return { count: 0, limit: baseLimit, base: baseLimit };
+async function fetchDailyCount() {
+  try {
+    const token = await getAuthToken();
+    const { userUid } = await chrome.storage.local.get("userUid");
+    if (!userUid) return 0;
+    const today = getTodayStr();
+    const doc = await firestoreGet(`users/${userUid}/usage/${today}`, token);
+    if (doc && doc.fields && doc.fields.count) {
+      return parseInt(doc.fields.count.integerValue) || 0;
+    }
+    return 0;
+  } catch {
+    return 0;
   }
-  await chrome.storage.sync.set({ userBaseLimit: baseLimit });
-  const effectiveLimit = baseLimit + dailyExtra;
-  return { count: dailyCount, limit: effectiveLimit, base: baseLimit };
+}
+
+async function saveDailyCount(count) {
+  try {
+    const token = await getAuthToken();
+    const { userUid } = await chrome.storage.local.get("userUid");
+    if (!userUid) return;
+    const today = getTodayStr();
+    await firestoreSet(`users/${userUid}/usage/${today}`, {
+      count: { integerValue: String(count) },
+    }, token);
+  } catch {}
+}
+
+async function getDailyUsage() {
+  const baseLimit = await fetchUserBaseLimit();
+  const count = await fetchDailyCount();
+  updateBadge(count, baseLimit);
+  return { count, limit: baseLimit, base: baseLimit };
 }
 
 async function incrementDailyCount() {
   const usage = await getDailyUsage();
   const newCount = usage.count + 1;
-  await chrome.storage.sync.set({ dailyCount: newCount });
+  await saveDailyCount(newCount);
   updateBadge(newCount, usage.limit);
   return { count: newCount, limit: usage.limit };
 }
 
 async function handleAddMoreAnalyses() {
   const usage = await getDailyUsage();
-  const { dailyExtra = 0 } = await chrome.storage.sync.get("dailyExtra");
-  const newExtra = dailyExtra + ADD_MORE_AMOUNT;
-  const newLimit = usage.base + newExtra;
-  await chrome.storage.sync.set({ dailyExtra: newExtra });
-  // Update Firestore with new total limit
-  try { await updateFirestoreLimit(newLimit); } catch {}  updateBadge(usage.count, newLimit);
+  const newLimit = usage.base + ADD_MORE_AMOUNT;
+  try { await updateFirestoreLimit(newLimit); } catch {}
+  updateBadge(usage.count, newLimit);
   return { count: usage.count, limit: newLimit };
 }
 
@@ -282,7 +295,7 @@ async function handleSignUp(data) {
 
 async function handleSignOut() {
   await chrome.storage.local.remove(["authToken", "refreshToken", "tokenExpiry", "userEmail", "userUid"]);
-  await chrome.storage.sync.remove(["userBaseLimit", "dailyCount", "dailyDate", "dailyExtra"]);
+  await chrome.storage.sync.remove(["userBaseLimit"]);
   chrome.action.setBadgeText({ text: "" });
   return { success: true };
 }
