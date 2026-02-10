@@ -55,9 +55,61 @@ async function getAuthHeaders() {
   };
 }
 
+// ── Daily limit ─────────────────────────────────────────
+
+const DAILY_BASE_LIMIT = 15;
+
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function getDailyUsage() {
+  const { dailyCount = 0, dailyDate = "", dailyLimit = DAILY_BASE_LIMIT } =
+    await chrome.storage.sync.get(["dailyCount", "dailyDate", "dailyLimit"]);
+  const today = getTodayStr();
+  if (dailyDate !== today) {
+    await chrome.storage.sync.set({ dailyCount: 0, dailyDate: today, dailyLimit: DAILY_BASE_LIMIT });
+    updateBadge(0, DAILY_BASE_LIMIT);
+    return { count: 0, limit: DAILY_BASE_LIMIT };
+  }
+  return { count: dailyCount, limit: dailyLimit };
+}
+
+async function incrementDailyCount() {
+  const usage = await getDailyUsage();
+  const newCount = usage.count + 1;
+  await chrome.storage.sync.set({ dailyCount: newCount });
+  updateBadge(newCount, usage.limit);
+  return { count: newCount, limit: usage.limit };
+}
+
+async function handleAddMoreAnalyses() {
+  const usage = await getDailyUsage();
+  const newLimit = usage.limit + DAILY_BASE_LIMIT;
+  await chrome.storage.sync.set({ dailyLimit: newLimit });
+  updateBadge(usage.count, newLimit);
+  return { count: usage.count, limit: newLimit };
+}
+
+function updateBadge(count, limit) {
+  const text = String(count);
+  const color = count >= limit ? "#ef4444" : "#3b82f6";
+  chrome.action.setBadgeText({ text });
+  chrome.action.setBadgeBackgroundColor({ color });
+}
+
+// Update badge on startup
+getDailyUsage().then(({ count, limit }) => updateBadge(count, limit));
+
 // ── API handlers ─────────────────────────────────────────
 
 async function handleAnalyzeText(data) {
+  // Check daily limit
+  const usage = await getDailyUsage();
+  if (usage.count >= usage.limit) {
+    throw new Error("DAILY_LIMIT_REACHED");
+  }
+
   const headers = await getAuthHeaders();
   const response = await fetchWithTimeout(`${BACKEND_URL}/analyze/text`, {
     method: "POST",
@@ -69,6 +121,10 @@ async function handleAnalyzeText(data) {
     const err = await response.text();
     throw new Error(`Backend error ${response.status}: ${err}`);
   }
+
+  // Increment daily count after successful analysis
+  await incrementDailyCount();
+
   return response.json();
 }
 
@@ -159,6 +215,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     signUp: () => handleSignUp(message),
     signOut: () => handleSignOut(),
     getUser: () => handleGetUser(),
+    getDailyUsage: () => getDailyUsage(),
+    addMoreAnalyses: () => handleAddMoreAnalyses(),
   };
 
   const handler = handlers[message.action];

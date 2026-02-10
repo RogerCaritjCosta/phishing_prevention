@@ -141,26 +141,81 @@ body {
   color: #64748b;
 }
 
-.phd-popup__counter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.phd-popup__quota {
   margin-bottom: 14px;
   padding: 8px 10px;
-  background: #f0fdf4;
+  background: #f8fafc;
   border-radius: 6px;
-  border: 1px solid #bbf7d0;
+  border: 1px solid #e2e8f0;
 }
 
-.phd-popup__counter-number {
-  font-size: 20px;
+.phd-popup__quota-info {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.phd-popup__quota-count {
+  font-size: 18px;
   font-weight: 700;
-  color: #16a34a;
+  color: #3b82f6;
 }
 
-.phd-popup__counter-label {
+.phd-popup__quota-sep {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.phd-popup__quota-limit {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.phd-popup__quota-label {
   font-size: 12px;
   color: #475569;
+  margin-left: 4px;
+}
+
+.phd-popup__quota-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.phd-popup__quota-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.3s, background 0.3s;
+}
+
+.phd-popup__quota-fill--warn {
+  background: #f59e0b;
+}
+
+.phd-popup__quota-fill--full {
+  background: #ef4444;
+}
+
+.phd-popup__add-more {
+  width: 100%;
+  padding: 5px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.phd-popup__add-more:hover {
+  background: #dcfce7;
 }
 
 .phd-popup__label {

@@ -30,4 +30,12 @@ const PhishingAPI = {
   getUser() {
     return this._send({ action: "getUser" });
   },
+
+  getDailyUsage() {
+    return this._send({ action: "getDailyUsage" });
+  },
+
+  addMoreAnalyses() {
+    return this._send({ action: "addMoreAnalyses" });
+  },
 };

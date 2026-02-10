@@ -358,14 +358,12 @@
       cache[emailId] = result;
       renderBanner(result);
 
-      // Increment analyzed counter
-      chrome.storage.sync.get({ analyzedCount: 0 }, (items) => {
-        chrome.storage.sync.set({ analyzedCount: items.analyzedCount + 1 });
-      });
     } catch (err) {
       console.error("[PHD] Analysis failed:", err);
       let errorMsg;
-      if (err.message.includes("timed out") || err.message.includes("Failed to fetch")) {
+      if (err.message.includes("DAILY_LIMIT_REACHED")) {
+        errorMsg = t("daily_limit", "Daily analysis limit reached. Open PhishBuster to get more analyses.");
+      } else if (err.message.includes("timed out") || err.message.includes("Failed to fetch")) {
         errorMsg = t("backend_unreachable", "Backend unreachable — is the server running?");
       } else if (err.message.includes("Session expired") || err.message.includes("Not logged in")) {
         errorMsg = t("auth_required", "Please log in to PhishBuster to analyze emails.");

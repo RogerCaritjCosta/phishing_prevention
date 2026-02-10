@@ -35,9 +35,17 @@
         <span class="phd-popup__status-text" id="statusText">Checking...</span>
       </div>
 
-      <div class="phd-popup__counter">
-        <span class="phd-popup__counter-number" id="counterNumber">0</span>
-        <span class="phd-popup__counter-label">emails analyzed</span>
+      <div class="phd-popup__quota">
+        <div class="phd-popup__quota-info">
+          <span class="phd-popup__quota-count" id="quotaCount">0</span>
+          <span class="phd-popup__quota-sep">/</span>
+          <span class="phd-popup__quota-limit" id="quotaLimit">15</span>
+          <span class="phd-popup__quota-label">analyses today</span>
+        </div>
+        <div class="phd-popup__quota-bar">
+          <div class="phd-popup__quota-fill" id="quotaFill"></div>
+        </div>
+        <button id="addMoreBtn" class="phd-popup__add-more">+ 15 more</button>
       </div>
 
       <label class="phd-popup__label" for="language">Language</label>

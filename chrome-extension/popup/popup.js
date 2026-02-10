@@ -29,7 +29,10 @@ const csvMsg        = $("csvMsg");
 const domainList    = $("domainList");
 const domainInput   = $("domainInput");
 const addDomainBtn  = $("addDomainBtn");
-const counterNumber = $("counterNumber");
+const quotaCount    = $("quotaCount");
+const quotaLimit    = $("quotaLimit");
+const quotaFill     = $("quotaFill");
+const addMoreBtn    = $("addMoreBtn");
 
 // ── Auth state ───────────────────────────────────────────
 let authMode = "login"; // "login" or "register"
@@ -64,11 +67,11 @@ function showApp(email) {
   userEmailEl.textContent = email;
 
   chrome.storage.sync.get(
-    { language: "en", trustedSenders: [], trustedDomains: [], analyzedCount: 0 },
+    { language: "en", trustedSenders: [], trustedDomains: [] },
     (items) => {
       langSelect.value = items.language;
-      counterNumber.textContent = items.analyzedCount;
       checkHealth();
+      loadDailyUsage();
       renderTrustedList(items.trustedSenders);
       renderDomainList(items.trustedDomains);
     }
@@ -308,6 +311,48 @@ addDomainBtn.addEventListener("click", () => {
 });
 
 domainInput.addEventListener("keydown", (e) => { if (e.key === "Enter") addDomainBtn.click(); });
+
+// ── Daily usage / quota ─────────────────────────────────
+async function loadDailyUsage() {
+  try {
+    const usage = await sendMsg("getDailyUsage");
+    renderQuota(usage.count, usage.limit);
+  } catch {
+    renderQuota(0, 15);
+  }
+}
+
+function renderQuota(count, limit) {
+  quotaCount.textContent = count;
+  quotaLimit.textContent = limit;
+  const pct = Math.min((count / limit) * 100, 100);
+  quotaFill.style.width = `${pct}%`;
+  quotaFill.className = "phd-popup__quota-fill";
+  if (pct >= 100) {
+    quotaFill.classList.add("phd-popup__quota-fill--full");
+    quotaCount.style.color = "#ef4444";
+  } else if (pct >= 70) {
+    quotaFill.classList.add("phd-popup__quota-fill--warn");
+    quotaCount.style.color = "#f59e0b";
+  } else {
+    quotaCount.style.color = "#3b82f6";
+  }
+}
+
+addMoreBtn.addEventListener("click", async () => {
+  addMoreBtn.disabled = true;
+  addMoreBtn.textContent = "Adding...";
+  try {
+    const usage = await sendMsg("addMoreAnalyses");
+    renderQuota(usage.count, usage.limit);
+    flash("+15 analyses added", "ok");
+  } catch (err) {
+    flash(err.message, "err");
+  } finally {
+    addMoreBtn.disabled = false;
+    addMoreBtn.textContent = "+ 15 more";
+  }
+});
 
 function removeDomain(domain) {
   chrome.storage.sync.get({ trustedDomains: [] }, (items) => {
