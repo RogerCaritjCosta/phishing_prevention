@@ -82,27 +82,49 @@ async function firestoreSet(path, fields, token) {
   return resp.json();
 }
 
-async function fetchUserBaseLimit() {
+let _baseLimitCache = { value: 10, fetchedAt: 0 };
+const BASE_LIMIT_CACHE_MS = 5 * 60 * 1000; // refresh from Firestore every 5 min
+
+async function fetchUserBaseLimit(forceRefresh = false) {
+  // Return cached if fresh enough
+  if (!forceRefresh && _baseLimitCache.fetchedAt > 0 &&
+      Date.now() - _baseLimitCache.fetchedAt < BASE_LIMIT_CACHE_MS) {
+    return _baseLimitCache.value;
+  }
+
   try {
     const token = await getAuthToken();
     const { userUid } = await chrome.storage.local.get("userUid");
-    if (!userUid) return 10;
+    if (!userUid) return _baseLimitCache.value;
     const doc = await firestoreGet(`users/${userUid}`, token);
     if (doc && doc.fields && doc.fields.dailyLimit) {
-      return parseInt(doc.fields.dailyLimit.integerValue) || 10;
+      const limit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
+      _baseLimitCache = { value: limit, fetchedAt: Date.now() };
+      await chrome.storage.sync.set({ userBaseLimit: limit });
+      return limit;
     }
     return 10;
   } catch {
-    // Fallback to cached value or default
     const { userBaseLimit = 10 } = await chrome.storage.sync.get("userBaseLimit");
     return userBaseLimit;
   }
+}
+
+async function updateFirestoreLimit(newLimit) {
+  const token = await getAuthToken();
+  const { userUid } = await chrome.storage.local.get("userUid");
+  if (!userUid) return;
+  await firestoreSet(`users/${userUid}`, {
+    dailyLimit: { integerValue: String(newLimit) },
+  }, token);
+  _baseLimitCache = { value: newLimit, fetchedAt: Date.now() };
 }
 
 async function createUserDoc(uid, token) {
   await firestoreSet(`users/${uid}`, {
     dailyLimit: { integerValue: "10" },
   }, token);
+  _baseLimitCache = { value: 10, fetchedAt: Date.now() };
 }
 
 // ── Daily limit ─────────────────────────────────────────
@@ -114,21 +136,22 @@ function getTodayStr() {
 }
 
 async function getDailyUsage() {
-  const { dailyCount = 0, dailyDate = "", dailyExtra = 0, userBaseLimit = 10 } =
-    await chrome.storage.sync.get(["dailyCount", "dailyDate", "dailyExtra", "userBaseLimit"]);
+  // Always try to get fresh base limit from Firestore (cached 5 min)
+  const baseLimit = await fetchUserBaseLimit();
+
+  const { dailyCount = 0, dailyDate = "", dailyExtra = 0 } =
+    await chrome.storage.sync.get(["dailyCount", "dailyDate", "dailyExtra"]);
   const today = getTodayStr();
   if (dailyDate !== today) {
-    // New day: reset count and extra, refresh base limit from Firestore
-    let baseLimit = userBaseLimit;
-    try { baseLimit = await fetchUserBaseLimit(); } catch {}
     await chrome.storage.sync.set({
       dailyCount: 0, dailyDate: today, dailyExtra: 0, userBaseLimit: baseLimit,
     });
     updateBadge(0, baseLimit);
     return { count: 0, limit: baseLimit, base: baseLimit };
   }
-  const effectiveLimit = userBaseLimit + dailyExtra;
-  return { count: dailyCount, limit: effectiveLimit, base: userBaseLimit };
+  await chrome.storage.sync.set({ userBaseLimit: baseLimit });
+  const effectiveLimit = baseLimit + dailyExtra;
+  return { count: dailyCount, limit: effectiveLimit, base: baseLimit };
 }
 
 async function incrementDailyCount() {
@@ -145,6 +168,8 @@ async function handleAddMoreAnalyses() {
   const newExtra = dailyExtra + ADD_MORE_AMOUNT;
   const newLimit = usage.base + newExtra;
   await chrome.storage.sync.set({ dailyExtra: newExtra });
+  // Update Firestore with new total limit
+  try { await updateFirestoreLimit(newLimit); } catch {}
   updateBadge(usage.count, newLimit);
   return { count: usage.count, limit: newLimit };
 }
