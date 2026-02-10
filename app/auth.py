@@ -1,7 +1,7 @@
-import json
 import time
 import jwt
 import requests
+from cryptography.x509 import load_pem_x509_certificate
 from functools import wraps
 from flask import request, jsonify
 
@@ -35,7 +35,9 @@ def verify_firebase_token(id_token):
     if not kid or kid not in certs:
         raise ValueError("Invalid token: unknown key ID")
 
-    cert = certs[kid]
+    cert_pem = certs[kid]
+    cert_obj = load_pem_x509_certificate(cert_pem.encode())
+    public_key = cert_obj.public_key()
 
     decoded = jwt.decode(
         id_token,

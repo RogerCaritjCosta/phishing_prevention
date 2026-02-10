@@ -364,9 +364,14 @@
       });
     } catch (err) {
       console.error("[PHD] Analysis failed:", err);
-      const errorMsg = err.message.includes("timed out") || err.message.includes("Failed to fetch")
-        ? t("backend_unreachable", "Backend unreachable — is the server running?")
-        : t("error_generic", "An error occurred during analysis.");
+      let errorMsg;
+      if (err.message.includes("timed out") || err.message.includes("Failed to fetch")) {
+        errorMsg = t("backend_unreachable", "Backend unreachable — is the server running?");
+      } else if (err.message.includes("Session expired") || err.message.includes("Not logged in")) {
+        errorMsg = t("auth_required", "Please log in to PhishBuster to analyze emails.");
+      } else {
+        errorMsg = err.message || t("error_generic", "An error occurred during analysis.");
+      }
       renderErrorBanner(errorMsg, () => analyzeEmail());
     }
   }
