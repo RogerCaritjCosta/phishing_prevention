@@ -104,6 +104,11 @@ authBtn.addEventListener("click", async () => {
     authMsg.className = "phd-popup__msg phd-popup__msg--err";
     return;
   }
+  if (authMode === "register" && email.includes("+")) {
+    authMsg.textContent = "Email addresses with '+' are not allowed";
+    authMsg.className = "phd-popup__msg phd-popup__msg--err";
+    return;
+  }
   if (password.length < 6) {
     authMsg.textContent = "Password must be at least 6 characters";
     authMsg.className = "phd-popup__msg phd-popup__msg--err";
