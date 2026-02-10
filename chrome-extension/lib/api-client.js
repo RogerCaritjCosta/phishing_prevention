@@ -26,4 +26,8 @@ const PhishingAPI = {
   healthCheck() {
     return this._send({ action: "healthCheck" });
   },
+
+  getUser() {
+    return this._send({ action: "getUser" });
+  },
 };

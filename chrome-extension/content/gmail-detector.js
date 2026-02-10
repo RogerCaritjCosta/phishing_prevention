@@ -325,6 +325,18 @@
       return;
     }
 
+    // Check if user is logged in
+    try {
+      const user = await PhishingAPI.getUser();
+      if (!user.loggedIn) {
+        renderErrorBanner("Please log in to PhishBuster to analyze emails.", () => analyzeEmail());
+        return;
+      }
+    } catch {
+      renderErrorBanner("Please log in to PhishBuster to analyze emails.", () => analyzeEmail());
+      return;
+    }
+
     renderLoadingBanner();
 
     try {

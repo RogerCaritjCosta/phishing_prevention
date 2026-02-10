@@ -1,6 +1,7 @@
 import time
 from flask import request, jsonify, current_app
 from app.api import api_bp
+from app.auth import require_auth
 
 
 @api_bp.route("/health", methods=["GET"])
@@ -18,6 +19,7 @@ def health():
 
 
 @api_bp.route("/analyze/text", methods=["POST"])
+@require_auth
 def analyze_text():
     data = request.get_json()
     if not data or not data.get("text", "").strip():
@@ -39,6 +41,7 @@ def analyze_text():
 
 
 @api_bp.route("/analyze/eml", methods=["POST"])
+@require_auth
 def analyze_eml():
     if "file" not in request.files:
         return jsonify({"success": False, "error": "No file provided"}), 400

@@ -8,46 +8,66 @@
   <div class="phd-popup">
     <h1 class="phd-popup__title">PhishBuster</h1>
 
-    <div class="phd-popup__status">
-      <span class="phd-popup__dot" id="statusDot"></span>
-      <span class="phd-popup__status-text" id="statusText">Checking...</span>
-    </div>
-
-    <div class="phd-popup__counter">
-      <span class="phd-popup__counter-number" id="counterNumber">0</span>
-      <span class="phd-popup__counter-label">emails analyzed</span>
-    </div>
-
-    <label class="phd-popup__label" for="language">Language</label>
-    <select id="language" class="phd-popup__select">
-      <option value="en">English</option>
-      <option value="es">Espa&ntilde;ol</option>
-      <option value="ca">Catal&agrave;</option>
-    </select>
-
-    <button id="saveBtn" class="phd-popup__save">Save</button>
-    <div id="saveMsg" class="phd-popup__msg"></div>
-
-    <div class="phd-popup__section">
-      <label class="phd-popup__label">Trusted senders</label>
-      <div id="trustedList" class="phd-popup__trusted-list"></div>
-      <div class="phd-popup__trusted-add">
-        <input type="text" id="trustedInput" class="phd-popup__input" placeholder="email@example.com">
-        <button id="addTrustedBtn" class="phd-popup__add-btn">+</button>
+    <!-- Auth: Login/Register -->
+    <div id="authSection" class="phd-popup__auth" style="display:none;">
+      <div class="phd-popup__auth-tabs">
+        <button class="phd-popup__auth-tab phd-popup__auth-tab--active" id="tabLogin">Log in</button>
+        <button class="phd-popup__auth-tab" id="tabRegister">Register</button>
       </div>
-      <div class="phd-popup__csv-row">
-        <button id="csvBtn" class="phd-popup__csv-btn">Import CSV</button>
-        <input type="file" id="csvFile" accept=".csv,.txt" hidden>
-        <span id="csvMsg" class="phd-popup__csv-msg"></span>
-      </div>
+      <input type="email" id="authEmail" class="phd-popup__input" placeholder="Email">
+      <input type="password" id="authPassword" class="phd-popup__input" placeholder="Password">
+      <button id="authBtn" class="phd-popup__save">Log in</button>
+      <div id="authMsg" class="phd-popup__msg"></div>
     </div>
 
-    <div class="phd-popup__section">
-      <label class="phd-popup__label">Trusted domains</label>
-      <div id="domainList" class="phd-popup__trusted-list"></div>
-      <div class="phd-popup__trusted-add">
-        <input type="text" id="domainInput" class="phd-popup__input" placeholder="example.com">
-        <button id="addDomainBtn" class="phd-popup__add-btn">+</button>
+    <!-- Logged-in UI -->
+    <div id="appSection" style="display:none;">
+      <div class="phd-popup__user-bar">
+        <span class="phd-popup__user-email" id="userEmail"></span>
+        <button id="logoutBtn" class="phd-popup__logout">Log out</button>
+      </div>
+
+      <div class="phd-popup__status">
+        <span class="phd-popup__dot" id="statusDot"></span>
+        <span class="phd-popup__status-text" id="statusText">Checking...</span>
+      </div>
+
+      <div class="phd-popup__counter">
+        <span class="phd-popup__counter-number" id="counterNumber">0</span>
+        <span class="phd-popup__counter-label">emails analyzed</span>
+      </div>
+
+      <label class="phd-popup__label" for="language">Language</label>
+      <select id="language" class="phd-popup__select">
+        <option value="en">English</option>
+        <option value="es">Espa&ntilde;ol</option>
+        <option value="ca">Catal&agrave;</option>
+      </select>
+
+      <button id="saveBtn" class="phd-popup__save">Save</button>
+      <div id="saveMsg" class="phd-popup__msg"></div>
+
+      <div class="phd-popup__section">
+        <label class="phd-popup__label">Trusted senders</label>
+        <div id="trustedList" class="phd-popup__trusted-list"></div>
+        <div class="phd-popup__trusted-add">
+          <input type="text" id="trustedInput" class="phd-popup__input" placeholder="email@example.com">
+          <button id="addTrustedBtn" class="phd-popup__add-btn">+</button>
+        </div>
+        <div class="phd-popup__csv-row">
+          <button id="csvBtn" class="phd-popup__csv-btn">Import CSV</button>
+          <input type="file" id="csvFile" accept=".csv,.txt" hidden>
+          <span id="csvMsg" class="phd-popup__csv-msg"></span>
+        </div>
+      </div>
+
+      <div class="phd-popup__section">
+        <label class="phd-popup__label">Trusted domains</label>
+        <div id="domainList" class="phd-popup__trusted-list"></div>
+        <div class="phd-popup__trusted-add">
+          <input type="text" id="domainInput" class="phd-popup__input" placeholder="example.com">
+          <button id="addDomainBtn" class="phd-popup__add-btn">+</button>
+        </div>
       </div>
     </div>
   </div>
