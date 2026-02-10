@@ -1,8 +1,7 @@
-const DEFAULT_BACKEND = "http://localhost:5000/api/v1";
+const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 
 const $ = (id) => document.getElementById(id);
 
-const urlInput      = $("backendUrl");
 const langSelect    = $("language");
 const saveBtn       = $("saveBtn");
 const saveMsg       = $("saveMsg");
@@ -17,14 +16,15 @@ const csvMsg        = $("csvMsg");
 const domainList    = $("domainList");
 const domainInput   = $("domainInput");
 const addDomainBtn  = $("addDomainBtn");
+const counterNumber = $("counterNumber");
 
 // ── Load saved settings ──────────────────────────────────
 chrome.storage.sync.get(
-  { backendUrl: DEFAULT_BACKEND, language: "en", trustedSenders: [], trustedDomains: [] },
+  { language: "en", trustedSenders: [], trustedDomains: [], analyzedCount: 0 },
   (items) => {
-    urlInput.value = items.backendUrl;
     langSelect.value = items.language;
-    checkHealth(items.backendUrl);
+    counterNumber.textContent = items.analyzedCount;
+    checkHealth();
     renderTrustedList(items.trustedSenders);
     renderDomainList(items.trustedDomains);
   }
@@ -32,12 +32,10 @@ chrome.storage.sync.get(
 
 // ── Save ─────────────────────────────────────────────────
 saveBtn.addEventListener("click", () => {
-  const backendUrl = urlInput.value.trim() || DEFAULT_BACKEND;
   const language = langSelect.value;
 
-  chrome.storage.sync.set({ backendUrl, language }, () => {
+  chrome.storage.sync.set({ language }, () => {
     flash("Settings saved", "ok");
-    checkHealth(backendUrl);
 
     // Notify open Gmail tabs
     chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
@@ -52,12 +50,12 @@ saveBtn.addEventListener("click", () => {
 });
 
 // ── Health check ─────────────────────────────────────────
-async function checkHealth(backendUrl) {
+async function checkHealth() {
   statusDot.className = "phd-popup__dot";
   statusText.textContent = "Checking...";
 
   try {
-    const resp = await fetch(`${backendUrl}/health`, { signal: AbortSignal.timeout(5000) });
+    const resp = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(60000) });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
 

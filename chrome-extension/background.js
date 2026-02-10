@@ -1,14 +1,10 @@
-const DEFAULT_BACKEND = "http://localhost:5000/api/v1";
+const DEFAULT_BACKEND = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 
 function getBackendUrl() {
-  return new Promise((resolve) => {
-    chrome.storage.sync.get({ backendUrl: DEFAULT_BACKEND }, (items) => {
-      resolve(items.backendUrl);
-    });
-  });
+  return Promise.resolve(DEFAULT_BACKEND);
 }
 
-function fetchWithTimeout(url, options, timeoutMs = 15000) {
+function fetchWithTimeout(url, options, timeoutMs = 60000) {
   return Promise.race([
     fetch(url, options),
     new Promise((_, reject) =>

@@ -52,6 +52,28 @@ body {
   color: #64748b;
 }
 
+.phd-popup__counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 10px;
+  background: #f0fdf4;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+}
+
+.phd-popup__counter-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.phd-popup__counter-label {
+  font-size: 12px;
+  color: #475569;
+}
+
 .phd-popup__label {
   display: block;
   font-weight: 600;

@@ -345,6 +345,11 @@
 
       cache[emailId] = result;
       renderBanner(result);
+
+      // Increment analyzed counter
+      chrome.storage.sync.get({ analyzedCount: 0 }, (items) => {
+        chrome.storage.sync.set({ analyzedCount: items.analyzedCount + 1 });
+      });
     } catch (err) {
       console.error("[PHD] Analysis failed:", err);
       const errorMsg = err.message.includes("timed out") || err.message.includes("Failed to fetch")

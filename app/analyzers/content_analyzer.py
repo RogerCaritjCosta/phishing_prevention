@@ -209,7 +209,8 @@ class ContentAnalyzer(BaseAnalyzer):
         return []
 
     def _check_credentials(self, body: str, check_lang: str, ui_lang: str) -> list[Alarm]:
-        found = [kw for kw in CREDENTIAL_KEYWORDS.get(check_lang, []) if kw in body]
+        found = [kw for kw in CREDENTIAL_KEYWORDS.get(check_lang, [])
+                 if re.search(r'(?<!\w)' + re.escape(kw) + r'(?!\w)', body)]
         if found:
             title, desc_tpl = _t("credentials", ui_lang)
             desc = desc_tpl.format(keyword=found[0])
