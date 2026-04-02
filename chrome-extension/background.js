@@ -1,6 +1,6 @@
 const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
-const FIREBASE_API_KEY = "AIzaSyA4viSI5AUH7Mpp02k0uj_mUiIk9SuBzEA";
-const FIREBASE_PROJECT_ID = "phishbuster-5d57b";
+const FIREBASE_API_KEY = "AIzaSyBrXR9gC0Iw66XuItJmQYzU8e0yNgVgmLM";
+const FIREBASE_PROJECT_ID = "universal-login-hub";
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
 
 function fetchWithTimeout(url, options, timeoutMs = 60000) {
@@ -87,7 +87,7 @@ async function fetchUserBaseLimit() {
     const token = await getAuthToken();
     const { userUid } = await chrome.storage.local.get("userUid");
     if (!userUid) return 10;
-    const doc = await firestoreGet(`users/${userUid}`, token);
+    const doc = await firestoreGet(`users/${userUid}/apps/phishbuster`, token);
     if (doc && doc.fields && doc.fields.dailyLimit) {
       const limit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
       await chrome.storage.sync.set({ userBaseLimit: limit });
@@ -104,15 +104,30 @@ async function updateFirestoreLimit(newLimit) {
   const token = await getAuthToken();
   const { userUid } = await chrome.storage.local.get("userUid");
   if (!userUid) return;
-  await firestoreSet(`users/${userUid}`, {
+  await firestoreSet(`users/${userUid}/apps/phishbuster`, {
     dailyLimit: { integerValue: String(newLimit) },
   }, token);
 }
 
-async function createUserDoc(uid, token) {
+async function createUserDoc(uid, email, token) {
+  // Create shared user profile
   await firestoreSet(`users/${uid}`, {
+    email: { stringValue: email },
+  }, token);
+  // Create phishbuster app access + config
+  await firestoreSet(`users/${uid}/apps/phishbuster`, {
+    enabled: { booleanValue: true },
+    role: { stringValue: "user" },
     dailyLimit: { integerValue: "10" },
   }, token);
+}
+
+async function checkAppAccess(uid, token) {
+  const doc = await firestoreGet(`users/${uid}/apps/phishbuster`, token);
+  if (!doc || !doc.fields || !doc.fields.enabled || !doc.fields.enabled.booleanValue) {
+    throw new Error("You don't have access to PhishBuster. Contact the administrator.");
+  }
+  return doc.fields.role?.stringValue || "user";
 }
 
 // ── Daily usage (persisted in Firestore) ────────────────
@@ -129,7 +144,7 @@ async function fetchDailyCount() {
     const { userUid } = await chrome.storage.local.get("userUid");
     if (!userUid) return 0;
     const today = getTodayStr();
-    const doc = await firestoreGet(`users/${userUid}/usage/${today}`, token);
+    const doc = await firestoreGet(`users/${userUid}/apps/phishbuster/usage/${today}`, token);
     if (doc && doc.fields && doc.fields.count) {
       return parseInt(doc.fields.count.integerValue) || 0;
     }
@@ -145,7 +160,7 @@ async function saveDailyCount(count) {
     const { userUid } = await chrome.storage.local.get("userUid");
     if (!userUid) return;
     const today = getTodayStr();
-    await firestoreSet(`users/${userUid}/usage/${today}`, {
+    await firestoreSet(`users/${userUid}/apps/phishbuster/usage/${today}`, {
       count: { integerValue: String(count) },
     }, token);
   } catch {}
@@ -240,6 +255,9 @@ async function handleSignIn(data) {
   const result = await resp.json();
   if (result.error) throw new Error(result.error.message);
 
+  // Check app access before completing sign-in
+  await checkAppAccess(result.localId, result.idToken);
+
   await chrome.storage.local.set({
     authToken: result.idToken,
     refreshToken: result.refreshToken,
@@ -248,9 +266,9 @@ async function handleSignIn(data) {
     userUid: result.localId,
   });
 
-  // Fetch and cache user's base limit from Firestore
+  // Fetch and cache user's base limit from Firestore (app-specific)
   try {
-    const doc = await firestoreGet(`users/${result.localId}`, result.idToken);
+    const doc = await firestoreGet(`users/${result.localId}/apps/phishbuster`, result.idToken);
     if (doc && doc.fields && doc.fields.dailyLimit) {
       const baseLimit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
       await chrome.storage.sync.set({ userBaseLimit: baseLimit });
@@ -284,9 +302,9 @@ async function handleSignUp(data) {
     userUid: result.localId,
   });
 
-  // Create user document in Firestore with default daily limit
+  // Create user document in Firestore with default daily limit + phishbuster access
   try {
-    await createUserDoc(result.localId, result.idToken);
+    await createUserDoc(result.localId, result.email, result.idToken);
     await chrome.storage.sync.set({ userBaseLimit: 10 });
   } catch {}
 

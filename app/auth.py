@@ -5,7 +5,7 @@ from cryptography.x509 import load_pem_x509_certificate
 from functools import wraps
 from flask import request, jsonify
 
-FIREBASE_PROJECT_ID = "phishbuster-5d57b"
+FIREBASE_PROJECT_ID = "universal-login-hub"
 GOOGLE_CERTS_URL = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com"
 
 _certs_cache = {"certs": None, "expires": 0}
