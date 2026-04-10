@@ -443,7 +443,7 @@ csvFile.addEventListener("change", () => {
 exportBtn.addEventListener("click", () => {
   chrome.storage.sync.get({ trustedSenders: [] }, (items) => {
     if (!items.trustedSenders.length) return;
-    const csv = items.trustedSenders.join("\n");
+    const csv = items.trustedSenders.join(", ");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
