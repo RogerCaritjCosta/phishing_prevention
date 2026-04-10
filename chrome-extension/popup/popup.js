@@ -416,6 +416,18 @@ function flash(text, type) {
   setTimeout(() => { saveMsg.textContent = ""; saveMsg.className = "phd-popup__msg"; }, 2500);
 }
 
+// ── Collapsible cards ────────────────────────────────────
+function setupCardToggle(toggleId, bodyId) {
+  const toggle = $(toggleId);
+  const body = $(bodyId);
+  toggle.addEventListener("click", () => {
+    const hidden = body.classList.toggle("phd-popup__card-body--hidden");
+    toggle.classList.toggle("phd-popup__card-header--open", !hidden);
+  });
+}
+setupCardToggle("toggleSenders", "sendersBody");
+setupCardToggle("toggleDomains", "domainsBody");
+
 // ── Trusted senders ──────────────────────────────────────
 function renderTrustedList(senders) {
   if (!senders || senders.length === 0) {

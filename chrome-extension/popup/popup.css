@@ -108,11 +108,17 @@ body {
   background: none;
   border: 1px solid #dc2626;
   color: #dc2626;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 11px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 13px;
   cursor: pointer;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
 }
 .phd-popup__logout:hover {
   background: #fef2f2;
@@ -390,11 +396,45 @@ body {
   text-decoration: underline;
 }
 
-/* ── Trusted senders ─────────────────────────────────── */
-.phd-popup__section {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+/* ── Collapsible cards ────────────────────────────────── */
+.phd-popup__card {
+  margin-top: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.phd-popup__card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+.phd-popup__card-header:hover {
+  background: #f1f5f9;
+}
+
+.phd-popup__card-arrow {
+  font-size: 10px;
+  color: #94a3b8;
+  transition: transform 0.2s;
+}
+.phd-popup__card-header.phd-popup__card-header--open .phd-popup__card-arrow {
+  transform: rotate(180deg);
+}
+
+.phd-popup__card-body {
+  padding: 8px 10px 10px;
+}
+.phd-popup__card-body--hidden {
+  display: none;
 }
 
 .phd-popup__trusted-list {

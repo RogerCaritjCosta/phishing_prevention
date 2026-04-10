@@ -45,7 +45,7 @@
     <div id="appSection" style="display:none;">
       <div class="phd-popup__user-bar">
         <span class="phd-popup__user-email" id="userEmail"></span>
-        <button id="logoutBtn" class="phd-popup__logout" data-i18n="logout">Log out</button>
+        <button id="logoutBtn" class="phd-popup__logout" title="Log out">&#x23FB;</button>
       </div>
 
       <div class="phd-popup__status">
@@ -75,26 +75,36 @@
 
       <div id="saveMsg" class="phd-popup__msg"></div>
 
-      <div class="phd-popup__section">
-        <label class="phd-popup__label" data-i18n="trusted_senders">Trusted senders</label>
-        <div id="trustedList" class="phd-popup__trusted-list"></div>
-        <div class="phd-popup__trusted-add">
-          <input type="text" id="trustedInput" class="phd-popup__input" placeholder="email@example.com">
-          <button id="addTrustedBtn" class="phd-popup__add-btn">+</button>
-        </div>
-        <div class="phd-popup__csv-row">
-          <button id="csvBtn" class="phd-popup__csv-btn" data-i18n="import_csv">Import CSV</button>
-          <input type="file" id="csvFile" accept=".csv,.txt" hidden>
-          <span id="csvMsg" class="phd-popup__csv-msg"></span>
+      <div class="phd-popup__card">
+        <button class="phd-popup__card-header" id="toggleSenders">
+          <span data-i18n="trusted_senders">Trusted senders</span>
+          <span class="phd-popup__card-arrow">&#x25BC;</span>
+        </button>
+        <div class="phd-popup__card-body phd-popup__card-body--hidden" id="sendersBody">
+          <div id="trustedList" class="phd-popup__trusted-list"></div>
+          <div class="phd-popup__trusted-add">
+            <input type="text" id="trustedInput" class="phd-popup__input" placeholder="email@example.com">
+            <button id="addTrustedBtn" class="phd-popup__add-btn">+</button>
+          </div>
+          <div class="phd-popup__csv-row">
+            <button id="csvBtn" class="phd-popup__csv-btn" data-i18n="import_csv">Import CSV</button>
+            <input type="file" id="csvFile" accept=".csv,.txt" hidden>
+            <span id="csvMsg" class="phd-popup__csv-msg"></span>
+          </div>
         </div>
       </div>
 
-      <div class="phd-popup__section">
-        <label class="phd-popup__label" data-i18n="trusted_domains">Trusted domains</label>
-        <div id="domainList" class="phd-popup__trusted-list"></div>
-        <div class="phd-popup__trusted-add">
-          <input type="text" id="domainInput" class="phd-popup__input" placeholder="example.com">
-          <button id="addDomainBtn" class="phd-popup__add-btn">+</button>
+      <div class="phd-popup__card">
+        <button class="phd-popup__card-header" id="toggleDomains">
+          <span data-i18n="trusted_domains">Trusted domains</span>
+          <span class="phd-popup__card-arrow">&#x25BC;</span>
+        </button>
+        <div class="phd-popup__card-body phd-popup__card-body--hidden" id="domainsBody">
+          <div id="domainList" class="phd-popup__trusted-list"></div>
+          <div class="phd-popup__trusted-add">
+            <input type="text" id="domainInput" class="phd-popup__input" placeholder="example.com">
+            <button id="addDomainBtn" class="phd-popup__add-btn">+</button>
+          </div>
         </div>
       </div>
     </div>
