@@ -3,16 +3,21 @@ const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 const $ = (id) => document.getElementById(id);
 
 // ── Auth elements ────────────────────────────────────────
-const authSection  = $("authSection");
-const appSection   = $("appSection");
-const tabLogin     = $("tabLogin");
-const tabRegister  = $("tabRegister");
-const authEmail    = $("authEmail");
-const authPassword = $("authPassword");
-const authBtn      = $("authBtn");
-const authMsg      = $("authMsg");
-const userEmailEl  = $("userEmail");
-const logoutBtn    = $("logoutBtn");
+const authSection    = $("authSection");
+const appSection     = $("appSection");
+const verifySection  = $("verifySection");
+const tabLogin       = $("tabLogin");
+const tabRegister    = $("tabRegister");
+const authEmail      = $("authEmail");
+const authPassword   = $("authPassword");
+const authBtn        = $("authBtn");
+const authMsg        = $("authMsg");
+const userEmailEl    = $("userEmail");
+const logoutBtn      = $("logoutBtn");
+const verifyEmailEl  = $("verifyEmail");
+const resendBtn      = $("resendBtn");
+const verifyMsg      = $("verifyMsg");
+const backToLoginBtn = $("backToLoginBtn");
 
 // ── App elements ─────────────────────────────────────────
 const langSelect    = $("language");
@@ -56,14 +61,28 @@ chrome.storage.local.get(["userEmail", "authToken"], (items) => {
   }
 });
 
+// ── Pending verification state ──────────────────────────
+let pendingVerifyEmail = "";
+let pendingVerifyPassword = "";
+
 function showAuth() {
   authSection.style.display = "";
   appSection.style.display = "none";
+  verifySection.style.display = "none";
+}
+
+function showVerify(email) {
+  authSection.style.display = "none";
+  appSection.style.display = "none";
+  verifySection.style.display = "";
+  verifyEmailEl.textContent = email;
+  verifyMsg.textContent = "";
 }
 
 function showApp(email) {
   authSection.style.display = "none";
   appSection.style.display = "";
+  verifySection.style.display = "none";
   userEmailEl.textContent = email;
 
   chrome.storage.sync.get(
@@ -122,17 +141,31 @@ authBtn.addEventListener("click", async () => {
   try {
     const action = authMode === "login" ? "signIn" : "signUp";
     const result = await sendMsg(action, { email, password });
-    showApp(result.email);
+
+    if (result.verificationSent) {
+      // Registration: show verification screen
+      pendingVerifyEmail = email;
+      pendingVerifyPassword = password;
+      showVerify(email);
+    } else {
+      showApp(result.email);
+    }
   } catch (err) {
-    const msg = err.message
-      .replace("EMAIL_NOT_FOUND", "Email not found")
-      .replace("INVALID_PASSWORD", "Wrong password")
-      .replace("INVALID_LOGIN_CREDENTIALS", "Invalid email or password")
-      .replace("EMAIL_EXISTS", "Email already registered")
-      .replace("WEAK_PASSWORD", "Password too weak (min 6 chars)")
-      .replace("INVALID_EMAIL", "Invalid email address");
-    authMsg.textContent = msg;
-    authMsg.className = "phd-popup__msg phd-popup__msg--err";
+    if (err.message.includes("EMAIL_NOT_VERIFIED")) {
+      pendingVerifyEmail = email;
+      pendingVerifyPassword = password;
+      showVerify(email);
+    } else {
+      const msg = err.message
+        .replace("EMAIL_NOT_FOUND", "Email not found")
+        .replace("INVALID_PASSWORD", "Wrong password")
+        .replace("INVALID_LOGIN_CREDENTIALS", "Invalid email or password")
+        .replace("EMAIL_EXISTS", "Email already registered")
+        .replace("WEAK_PASSWORD", "Password too weak (min 6 chars)")
+        .replace("INVALID_EMAIL", "Invalid email address");
+      authMsg.textContent = msg;
+      authMsg.className = "phd-popup__msg phd-popup__msg--err";
+    }
   } finally {
     authBtn.disabled = false;
     authBtn.textContent = authMode === "login" ? "Log in" : "Register";
@@ -316,6 +349,43 @@ addDomainBtn.addEventListener("click", () => {
 });
 
 domainInput.addEventListener("keydown", (e) => { if (e.key === "Enter") addDomainBtn.click(); });
+
+// ── Email verification ──────────────────────────────────
+resendBtn.addEventListener("click", async () => {
+  if (!pendingVerifyEmail || !pendingVerifyPassword) {
+    verifyMsg.textContent = "Please go back and log in again";
+    verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
+    return;
+  }
+  resendBtn.disabled = true;
+  resendBtn.textContent = "Sending...";
+  verifyMsg.textContent = "";
+  try {
+    await sendMsg("resendVerification", {
+      email: pendingVerifyEmail,
+      password: pendingVerifyPassword,
+    });
+    verifyMsg.textContent = "Verification email sent!";
+    verifyMsg.className = "phd-popup__msg phd-popup__msg--ok";
+  } catch (err) {
+    verifyMsg.textContent = err.message;
+    verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
+  } finally {
+    resendBtn.disabled = false;
+    resendBtn.textContent = "Resend verification email";
+  }
+});
+
+backToLoginBtn.addEventListener("click", () => {
+  pendingVerifyEmail = "";
+  pendingVerifyPassword = "";
+  authMode = "login";
+  tabLogin.classList.add("phd-popup__auth-tab--active");
+  tabRegister.classList.remove("phd-popup__auth-tab--active");
+  authBtn.textContent = "Log in";
+  authMsg.textContent = "";
+  showAuth();
+});
 
 // ── Daily usage / quota ─────────────────────────────────
 async function loadDailyUsage() {

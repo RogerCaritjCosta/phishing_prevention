@@ -255,6 +255,12 @@ async function handleSignIn(data) {
   const result = await resp.json();
   if (result.error) throw new Error(result.error.message);
 
+  // Check email verification
+  const verified = await lookupEmailVerified(result.idToken);
+  if (!verified) {
+    throw new Error("EMAIL_NOT_VERIFIED");
+  }
+
   // Check app access before completing sign-in
   await checkAppAccess(result.localId, result.idToken);
 
@@ -278,6 +284,35 @@ async function handleSignIn(data) {
   return { email: result.email };
 }
 
+async function sendVerificationEmail(idToken) {
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${FIREBASE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestType: "VERIFY_EMAIL", idToken }),
+    }
+  );
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(err.error?.message || "Failed to send verification email");
+  }
+}
+
+async function lookupEmailVerified(idToken) {
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    }
+  );
+  if (!resp.ok) throw new Error("Failed to check email verification status");
+  const data = await resp.json();
+  return data.users?.[0]?.emailVerified === true;
+}
+
 async function handleSignUp(data) {
   const resp = await fetch(
     `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
@@ -294,21 +329,37 @@ async function handleSignUp(data) {
   const result = await resp.json();
   if (result.error) throw new Error(result.error.message);
 
-  await chrome.storage.local.set({
-    authToken: result.idToken,
-    refreshToken: result.refreshToken,
-    tokenExpiry: Date.now() + parseInt(result.expiresIn) * 1000,
-    userEmail: result.email,
-    userUid: result.localId,
-  });
-
-  // Create user document in Firestore with default daily limit + phishbuster access
+  // Create user document in Firestore
   try {
     await createUserDoc(result.localId, result.email, result.idToken);
-    await chrome.storage.sync.set({ userBaseLimit: 10 });
   } catch {}
 
-  return { email: result.email };
+  // Send verification email
+  await sendVerificationEmail(result.idToken);
+
+  // Do NOT auto-login — user must verify email first
+  return { email: result.email, verificationSent: true };
+}
+
+async function handleResendVerification(data) {
+  // Sign in temporarily to get a token, then send verification email
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: data.email,
+        password: data.password,
+        returnSecureToken: true,
+      }),
+    }
+  );
+  const result = await resp.json();
+  if (result.error) throw new Error(result.error.message);
+
+  await sendVerificationEmail(result.idToken);
+  return { sent: true };
 }
 
 async function handleSignOut() {
@@ -335,6 +386,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     healthCheck: () => handleHealthCheck(),
     signIn: () => handleSignIn(message),
     signUp: () => handleSignUp(message),
+    resendVerification: () => handleResendVerification(message),
     signOut: () => handleSignOut(),
     getUser: () => handleGetUser(),
     getDailyUsage: () => getDailyUsage(),

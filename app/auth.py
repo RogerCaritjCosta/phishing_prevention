@@ -51,6 +51,10 @@ def verify_firebase_token(id_token):
     if not decoded.get("sub"):
         raise ValueError("Invalid token: missing subject")
 
+    # Require verified email
+    if not decoded.get("email_verified"):
+        raise ValueError("Email not verified")
+
     return decoded
 
 
