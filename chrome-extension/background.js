@@ -428,19 +428,22 @@ async function handleGoogleSignIn() {
 
   const isNewUser = result.isNewUser === true;
   const UNLIMITED_DOMAINS = ["rand.app", "rand.network"];
+  const emailDomain = result.email.split("@")[1]?.toLowerCase();
 
   // Create Firestore doc for new users
   if (isNewUser) {
     try {
       await createUserDoc(result.localId, result.email, result.idToken);
-      // Auto-unlimited for internal domains
-      const emailDomain = result.email.split("@")[1]?.toLowerCase();
-      if (UNLIMITED_DOMAINS.includes(emailDomain)) {
-        await firestoreSet(`users/${result.localId}/apps/phishbuster`, {
-          role: { stringValue: "unlimited" },
-          dailyLimit: { integerValue: "999999" },
-        }, result.idToken);
-      }
+    } catch {}
+  }
+
+  // Auto-unlimited for internal domains (every login, in case it wasn't set)
+  if (UNLIMITED_DOMAINS.includes(emailDomain)) {
+    try {
+      await firestoreSet(`users/${result.localId}/apps/phishbuster`, {
+        role: { stringValue: "unlimited" },
+        dailyLimit: { integerValue: "999999" },
+      }, result.idToken);
     } catch {}
   }
 
