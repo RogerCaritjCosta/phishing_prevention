@@ -77,7 +77,12 @@ def translations(lang):
 
 # ── Payments ─────────────────────────────────────────────
 
-VALID_PLANS = ("basic", "pro")
+PLAN_CONFIG = {
+    "basic":     {"config_key": "STRIPE_PRICE_BASIC",     "mode": "payment",      "base_plan": "basic"},
+    "pro":       {"config_key": "STRIPE_PRICE_PRO",       "mode": "payment",      "base_plan": "pro"},
+    "basic_sub": {"config_key": "STRIPE_PRICE_BASIC_SUB", "mode": "subscription", "base_plan": "basic"},
+    "pro_sub":   {"config_key": "STRIPE_PRICE_PRO_SUB",   "mode": "subscription", "base_plan": "pro"},
+}
 
 
 @api_bp.route("/checkout", methods=["POST"])
@@ -90,26 +95,32 @@ def create_checkout():
 
     data = request.get_json()
     plan = data.get("plan") if data else None
-    if plan not in VALID_PLANS:
-        return jsonify({"error": "Invalid plan. Choose 'basic' or 'pro'"}), 400
+    if plan not in PLAN_CONFIG:
+        return jsonify({"error": "Invalid plan"}), 400
 
-    price_id = config.get(f"STRIPE_PRICE_{plan.upper()}")
+    pc = PLAN_CONFIG[plan]
+    price_id = config.get(pc["config_key"])
     if not price_id:
         return jsonify({"error": f"Price not configured for plan '{plan}'"}), 503
 
     uid = request.firebase_user.get("sub", "")
     email = request.firebase_user.get("email", "")
 
-    session = stripe.checkout.Session.create(
-        mode="payment",
-        line_items=[{"price": price_id, "quantity": 1}],
-        customer_email=email,
-        metadata={"uid": uid, "plan": plan},
-        success_url=config.get("STRIPE_SUCCESS_URL",
-                               "https://phishing-prevention-1-vqvj.onrender.com/payment?result=success"),
-        cancel_url=config.get("STRIPE_CANCEL_URL",
-                              "https://phishing-prevention-1-vqvj.onrender.com/payment?result=cancelled"),
-    )
+    meta = {"uid": uid, "plan": pc["base_plan"]}
+    session_args = {
+        "mode": pc["mode"],
+        "line_items": [{"price": price_id, "quantity": 1}],
+        "customer_email": email,
+        "metadata": meta,
+        "success_url": config.get("STRIPE_SUCCESS_URL",
+                                  "https://phishing-prevention-1-vqvj.onrender.com/payment?result=success"),
+        "cancel_url": config.get("STRIPE_CANCEL_URL",
+                                 "https://phishing-prevention-1-vqvj.onrender.com/payment?result=cancelled"),
+    }
+    if pc["mode"] == "subscription":
+        session_args["subscription_data"] = {"metadata": meta}
+
+    session = stripe.checkout.Session.create(**session_args)
 
     return jsonify({"url": session.url})
 
@@ -128,6 +139,8 @@ def stripe_webhook():
     except (ValueError, stripe.error.SignatureVerificationError):
         return jsonify({"error": "Invalid signature"}), 400
 
+    valid_plans = set(pc["base_plan"] for pc in PLAN_CONFIG.values())
+
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         uid = session.get("metadata", {}).get("uid")
@@ -135,8 +148,24 @@ def stripe_webhook():
         customer_id = session.get("customer", "")
         payment_id = session.get("id", "")
 
-        if uid and plan in VALID_PLANS:
+        if uid and plan in valid_plans:
             from app.firebase import update_user_plan
             update_user_plan(uid, plan, customer_id, payment_id)
+
+    # Handle subscription renewals
+    if event["type"] == "invoice.payment_succeeded":
+        invoice = event["data"]["object"]
+        subscription_id = invoice.get("subscription")
+        if subscription_id and invoice.get("billing_reason") == "recurring":
+            # Fetch subscription to get metadata
+            sub = stripe.Subscription.retrieve(subscription_id)
+            uid = sub.get("metadata", {}).get("uid")
+            plan = sub.get("metadata", {}).get("plan")
+            customer_id = invoice.get("customer", "")
+            payment_id = invoice.get("id", "")
+
+            if uid and plan in valid_plans:
+                from app.firebase import update_user_plan
+                update_user_plan(uid, plan, customer_id, payment_id)
 
     return jsonify({"received": True})

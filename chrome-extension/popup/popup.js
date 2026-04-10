@@ -42,8 +42,12 @@ const POPUP_I18N = {
     plan_unlimited: "Unlimited",
     plan_expires: "Active until",
     upgrade_plan: "Upgrade your plan",
-    upgrade_basic: "Basic \u2014 50/day \u2014 1\u20AC (one-time)",
-    upgrade_pro: "Pro \u2014 250/day \u2014 3\u20AC (one-time)",
+    one_time_title: "One-time (30 days)",
+    upgrade_basic: "Basic \u2014 50/day \u2014 1\u20AC",
+    upgrade_pro: "Pro \u2014 250/day \u2014 3\u20AC",
+    subscription_title: "Monthly subscription",
+    sub_basic: "Basic \u2014 50/day \u2014 0.89\u20AC/mo",
+    sub_pro: "Pro \u2014 250/day \u2014 2.69\u20AC/mo",
     opening_checkout: "Opening checkout...",
     skip_senders: "Don't analyze",
     skip_domains: "Don't analyze",
@@ -94,8 +98,12 @@ const POPUP_I18N = {
     plan_unlimited: "Ilimitado",
     plan_expires: "Activo hasta",
     upgrade_plan: "Mejora tu plan",
-    upgrade_basic: "Basic \u2014 50/d\u00EDa \u2014 1\u20AC (pago \u00FAnico)",
-    upgrade_pro: "Pro \u2014 250/d\u00EDa \u2014 3\u20AC (pago \u00FAnico)",
+    one_time_title: "Pago \u00FAnico (30 d\u00EDas)",
+    upgrade_basic: "Basic \u2014 50/d\u00EDa \u2014 1\u20AC",
+    upgrade_pro: "Pro \u2014 250/d\u00EDa \u2014 3\u20AC",
+    subscription_title: "Suscripci\u00F3n mensual",
+    sub_basic: "Basic \u2014 50/d\u00EDa \u2014 0,89\u20AC/mes",
+    sub_pro: "Pro \u2014 250/d\u00EDa \u2014 2,69\u20AC/mes",
     opening_checkout: "Abriendo pago...",
     language: "Idioma",
     save: "Guardar",
@@ -149,8 +157,12 @@ const POPUP_I18N = {
     plan_unlimited: "Il\u00B7limitat",
     plan_expires: "Actiu fins",
     upgrade_plan: "Millora el teu pla",
-    upgrade_basic: "Basic \u2014 50/dia \u2014 1\u20AC (pagament \u00FAnic)",
-    upgrade_pro: "Pro \u2014 250/dia \u2014 3\u20AC (pagament \u00FAnic)",
+    one_time_title: "Pagament \u00FAnic (30 dies)",
+    upgrade_basic: "Basic \u2014 50/dia \u2014 1\u20AC",
+    upgrade_pro: "Pro \u2014 250/dia \u2014 3\u20AC",
+    subscription_title: "Subscripci\u00F3 mensual",
+    sub_basic: "Basic \u2014 50/dia \u2014 0,89\u20AC/mes",
+    sub_pro: "Pro \u2014 250/dia \u2014 2,69\u20AC/mes",
     opening_checkout: "Obrint pagament...",
     language: "Idioma",
     save: "Desar",
@@ -205,8 +217,9 @@ const quotaLimit      = $("quotaLimit");
 const quotaFill       = $("quotaFill");
 const planBadge       = $("planBadge");
 const planExpiry      = $("planExpiry");
-const upgradeCard     = $("upgradeCard");
-const upgradeButtons  = $("upgradeButtons");
+const upgradeCard        = $("upgradeCard");
+const upgradeButtons     = $("upgradeButtons");
+const subscriptionButtons = $("subscriptionButtons");
 const sendersCount      = $("sendersCount");
 const domainsCount      = $("domainsCount");
 const skipSendersCheck  = $("skipSendersCheck");
@@ -563,10 +576,9 @@ function renderPlanInfo(planType, planExpiresAt, role) {
     upgradeCard.style.display = "none";
   } else {
     upgradeCard.style.display = "";
-    const basicBtn = upgradeButtons.querySelector('[data-plan="basic"]');
-    const proBtn = upgradeButtons.querySelector('[data-plan="pro"]');
-    basicBtn.style.display = planType === "basic" ? "none" : "";
-    proBtn.style.display = "";
+    const hideBasic = planType === "basic";
+    upgradeButtons.querySelector('[data-plan="basic"]').style.display = hideBasic ? "none" : "";
+    subscriptionButtons.querySelector('[data-plan="basic_sub"]').style.display = hideBasic ? "none" : "";
   }
 }
 

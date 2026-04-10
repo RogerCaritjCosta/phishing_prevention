@@ -18,6 +18,8 @@ class Config:
     STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
     STRIPE_PRICE_BASIC = os.getenv("STRIPE_PRICE_BASIC", "")
     STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", "")
+    STRIPE_PRICE_BASIC_SUB = os.getenv("STRIPE_PRICE_BASIC_SUB", "")
+    STRIPE_PRICE_PRO_SUB = os.getenv("STRIPE_PRICE_PRO_SUB", "")
 
     # Firebase Admin (base64-encoded service account JSON)
     FIREBASE_SERVICE_ACCOUNT = os.getenv("FIREBASE_SERVICE_ACCOUNT", "")
