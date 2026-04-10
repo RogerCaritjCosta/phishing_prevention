@@ -209,9 +209,17 @@
   cursor: pointer;
   font-size: 12px;
   margin-left: auto;
+  white-space: nowrap;
 }
 .phd-retry:hover {
   background: #fef2f2;
+}
+.phd-banner--trusted .phd-retry {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+.phd-banner--trusted .phd-retry:hover {
+  background: #eff6ff;
 }
 
 /* ── Trust sender button ─────────────────────────────────── */

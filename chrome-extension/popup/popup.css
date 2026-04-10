@@ -304,6 +304,51 @@ body {
   color: #dc2626;
 }
 
+/* ── Toggle switch ───────────────────────────────────── */
+.phd-popup__toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.phd-popup__toggle-input {
+  display: none;
+}
+
+.phd-popup__toggle-slider {
+  width: 28px;
+  height: 16px;
+  background: #cbd5e1;
+  border-radius: 8px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.phd-popup__toggle-slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.phd-popup__toggle-input:checked + .phd-popup__toggle-slider {
+  background: #3b82f6;
+}
+.phd-popup__toggle-input:checked + .phd-popup__toggle-slider::after {
+  transform: translateX(12px);
+}
+
+.phd-popup__toggle-label {
+  font-size: 11px;
+  color: #475569;
+}
+
 /* ── Collapsible cards ────────────────────────────────── */
 .phd-popup__card {
   margin-top: 8px;

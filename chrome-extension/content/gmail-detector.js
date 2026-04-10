@@ -16,6 +16,7 @@
   let currentSender = null;  // sender of the currently displayed email
   let trustedSenders = [];   // list of trusted sender addresses
   let trustedDomains = [];   // list of trusted domains
+  let skipTrustedAnalysis = false;
   let debounceTimer = null;
   let observer = null;
 
@@ -273,6 +274,24 @@
     return `<div class="phd-no-alarms">${t("no_alarms", "No phishing indicators detected.")}</div>`;
   }
 
+  function renderSkippedBanner(sender, onAnalyze) {
+    const el = document.createElement("div");
+    el.className = "phd-banner phd-banner--trusted";
+    const msg = isTrustedSender(sender)
+      ? t("skipped_trusted_sender", "This email was not analyzed because the sender is on your trusted list.")
+      : t("skipped_trusted_domain", "This email was not analyzed because the domain is on your trusted list.");
+    el.innerHTML = `
+      <div class="phd-header">
+        <span class="phd-shield">&#x1F6E1;</span>
+        <span class="phd-title" style="font-weight:400;font-size:13px;color:#64748b;">${escapeHtml(msg)}</span>
+        <button class="phd-retry">${t("analyze_anyway", "Analyze anyway")}</button>
+        <button class="phd-close" title="Close">&times;</button>
+      </div>`;
+    el.querySelector(".phd-retry").addEventListener("click", onAnalyze);
+    el.querySelector(".phd-close").addEventListener("click", removeBanner);
+    injectBanner(el);
+  }
+
   function escapeHtml(str) {
     const d = document.createElement("div");
     d.textContent = str;
@@ -283,9 +302,10 @@
 
   function loadTrustedSenders() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get({ trustedSenders: [], trustedDomains: [] }, (items) => {
+      chrome.storage.sync.get({ trustedSenders: [], trustedDomains: [], skipTrustedAnalysis: false }, (items) => {
         trustedSenders = items.trustedSenders;
         trustedDomains = items.trustedDomains;
+        skipTrustedAnalysis = items.skipTrustedAnalysis;
         resolve();
       });
     });
@@ -315,15 +335,27 @@
 
   // ── Analysis orchestration ──────────────────────────────
 
+  function forceAnalyzeEmail() {
+    const emailId = getEmailIdFromHash();
+    if (emailId) {
+      delete cache[emailId];
+      cache[emailId] = "__force__";
+    }
+    currentEmailId = null;
+    analyzeEmail();
+  }
+
   async function analyzeEmail() {
     const emailId = getEmailIdFromHash();
     if (!emailId) return;
 
-    // Check cache
-    if (cache[emailId]) {
+    // Check cache (unless forced)
+    if (cache[emailId] && cache[emailId] !== "__force__") {
       renderBanner(cache[emailId]);
       return;
     }
+    const forced = cache[emailId] === "__force__";
+    if (forced) delete cache[emailId];
 
     // Check if user is logged in
     try {
@@ -335,6 +367,20 @@
     } catch {
       renderErrorBanner("Please log in to PhishBuster to analyze emails.", () => analyzeEmail());
       return;
+    }
+
+    // Check if sender is trusted and skip is enabled
+    try {
+      const bodyEl = await waitForEmailBody();
+      const sender = extractSender();
+      currentSender = sender;
+
+      if (!forced && skipTrustedAnalysis && isTrustedSender(sender)) {
+        renderSkippedBanner(sender, forceAnalyzeEmail);
+        return;
+      }
+    } catch {
+      // body not ready yet, continue with normal flow
     }
 
     renderLoadingBanner();
@@ -409,10 +455,11 @@
 
   async function loadSettings() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get({ language: "en", trustedSenders: [], trustedDomains: [] }, (items) => {
+      chrome.storage.sync.get({ language: "en", trustedSenders: [], trustedDomains: [], skipTrustedAnalysis: false }, (items) => {
         currentLang = items.language;
         trustedSenders = items.trustedSenders;
         trustedDomains = items.trustedDomains;
+        skipTrustedAnalysis = items.skipTrustedAnalysis;
         resolve();
       });
     });
@@ -466,6 +513,15 @@
       if (msg.action === "trustedSendersUpdated") {
         trustedSenders = msg.trustedSenders ?? trustedSenders;
         trustedDomains = msg.trustedDomains ?? trustedDomains;
+        const emailId = getEmailIdFromHash();
+        if (emailId) {
+          delete cache[emailId];
+          currentEmailId = null;
+          handleNavigation();
+        }
+      }
+      if (msg.action === "skipTrustedUpdated") {
+        skipTrustedAnalysis = msg.skipTrustedAnalysis;
         const emailId = getEmailIdFromHash();
         if (emailId) {
           delete cache[emailId];
