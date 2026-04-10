@@ -300,7 +300,10 @@
         <button class="phd-retry">${t("analyze_anyway", "Analyze anyway")}</button>
         <button class="phd-close" title="Close">&times;</button>
       </div>`;
-    el.querySelector(".phd-retry").addEventListener("click", onAnalyze);
+    el.querySelector(".phd-retry").addEventListener("click", () => {
+      renderLoadingBanner();
+      onAnalyze();
+    });
     el.querySelector(".phd-close").addEventListener("click", removeBanner);
     injectBanner(el);
   }
