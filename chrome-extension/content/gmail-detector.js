@@ -523,8 +523,13 @@
         currentLang = msg.language || currentLang;
         loadTranslations().then(() => {
           const emailId = getEmailIdFromHash();
-          if (emailId && cache[emailId]) {
+          if (!emailId) return;
+          if (cache[emailId]) {
             renderBanner(cache[emailId]);
+          } else {
+            // Re-render skipped banner with new language
+            currentEmailId = null;
+            handleNavigation();
           }
         });
       }
