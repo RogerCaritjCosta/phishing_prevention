@@ -421,26 +421,44 @@ body {
 
 .phd-popup__trusted-add {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
 .phd-popup__trusted-add .phd-popup__input {
   flex: 1;
+  border: none;
+  border-bottom: 1.5px solid #cbd5e1;
+  border-radius: 0;
+  padding: 4px 2px;
+  font-size: 12px;
+  background: transparent;
+}
+.phd-popup__trusted-add .phd-popup__input:focus {
+  border-bottom-color: #3b82f6;
+  box-shadow: none;
 }
 
 .phd-popup__add-btn {
-  background: #22c55e;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  width: 32px;
-  font-size: 18px;
-  font-weight: 700;
+  background: none;
+  color: #3b82f6;
+  border: 1.5px solid #3b82f6;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
 }
 .phd-popup__add-btn:hover {
-  background: #16a34a;
+  background: #3b82f6;
+  color: #fff;
 }
 
 .phd-popup__csv-row {
