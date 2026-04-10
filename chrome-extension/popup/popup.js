@@ -365,10 +365,14 @@ resendBtn.addEventListener("click", async () => {
       email: pendingVerifyEmail,
       password: pendingVerifyPassword,
     });
-    verifyMsg.textContent = "Verification email sent!";
+    verifyMsg.textContent = "Verification email sent! Check your spam folder too.";
     verifyMsg.className = "phd-popup__msg phd-popup__msg--ok";
   } catch (err) {
-    verifyMsg.textContent = err.message;
+    let msg = err.message;
+    if (msg.includes("TOO_MANY_ATTEMPTS_TRY_LATER")) {
+      msg = "Too many attempts. Please wait 15-60 minutes before trying again, and check your spam folder.";
+    }
+    verifyMsg.textContent = msg;
     verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
   } finally {
     resendBtn.disabled = false;
