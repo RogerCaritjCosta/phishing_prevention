@@ -55,14 +55,42 @@
         </button>
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="upgradeBody">
           <p class="phd-popup__upgrade-section-title" data-i18n="one_time_title">One-time (30 days)</p>
-          <div class="phd-popup__upgrade-buttons" id="upgradeButtons">
-            <button class="phd-popup__upgrade-btn" data-plan="basic" data-i18n="upgrade_basic">Basic &mdash; 50/day &mdash; 1&euro;</button>
-            <button class="phd-popup__upgrade-btn phd-popup__upgrade-btn--pro" data-plan="pro" data-i18n="upgrade_pro">Pro &mdash; 250/day &mdash; 3&euro;</button>
+          <div class="phd-popup__plan-rows" id="upgradeButtons">
+            <div class="phd-popup__plan-row" data-plan="basic">
+              <div class="phd-popup__plan-row-info">
+                <span class="phd-popup__plan-row-name">Basic</span>
+                <span class="phd-popup__plan-row-detail">50/<span data-i18n="day">day</span></span>
+              </div>
+              <span class="phd-popup__plan-row-price" data-price-for="basic">0,99&euro;</span>
+              <button class="phd-popup__plan-row-buy" data-plan="basic">&rarr;</button>
+            </div>
+            <div class="phd-popup__plan-row phd-popup__plan-row--pro" data-plan="pro">
+              <div class="phd-popup__plan-row-info">
+                <span class="phd-popup__plan-row-name">Pro</span>
+                <span class="phd-popup__plan-row-detail">250/<span data-i18n="day">day</span></span>
+              </div>
+              <span class="phd-popup__plan-row-price" data-price-for="pro">2,99&euro;</span>
+              <button class="phd-popup__plan-row-buy" data-plan="pro">&rarr;</button>
+            </div>
           </div>
           <p class="phd-popup__upgrade-section-title" data-i18n="subscription_title">Monthly subscription</p>
-          <div class="phd-popup__upgrade-buttons" id="subscriptionButtons">
-            <button class="phd-popup__upgrade-btn" data-plan="basic_sub" data-i18n="sub_basic">Basic &mdash; 50/day &mdash; 0.89&euro;/mo</button>
-            <button class="phd-popup__upgrade-btn phd-popup__upgrade-btn--pro" data-plan="pro_sub" data-i18n="sub_pro">Pro &mdash; 250/day &mdash; 2.69&euro;/mo</button>
+          <div class="phd-popup__plan-rows" id="subscriptionButtons">
+            <div class="phd-popup__plan-row" data-plan="basic_sub">
+              <div class="phd-popup__plan-row-info">
+                <span class="phd-popup__plan-row-name">Basic</span>
+                <span class="phd-popup__plan-row-detail">50/<span data-i18n="day">day</span></span>
+              </div>
+              <span class="phd-popup__plan-row-price" data-price-for="basic_sub">0,89&euro;/<span data-i18n="mo">mo</span></span>
+              <button class="phd-popup__plan-row-buy" data-plan="basic_sub">&rarr;</button>
+            </div>
+            <div class="phd-popup__plan-row phd-popup__plan-row--pro" data-plan="pro_sub">
+              <div class="phd-popup__plan-row-info">
+                <span class="phd-popup__plan-row-name">Pro</span>
+                <span class="phd-popup__plan-row-detail">250/<span data-i18n="day">day</span></span>
+              </div>
+              <span class="phd-popup__plan-row-price" data-price-for="pro_sub">2,69&euro;/<span data-i18n="mo">mo</span></span>
+              <button class="phd-popup__plan-row-buy" data-plan="pro_sub">&rarr;</button>
+            </div>
           </div>
         </div>
       </div>

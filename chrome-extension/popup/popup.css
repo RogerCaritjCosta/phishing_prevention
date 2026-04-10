@@ -203,32 +203,70 @@ body {
   margin-top: 0;
 }
 
-.phd-popup__upgrade-buttons {
+.phd-popup__plan-rows {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.phd-popup__upgrade-btn {
-  width: 100%;
-  padding: 6px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1d4ed8;
-  border-radius: 4px;
+.phd-popup__plan-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+.phd-popup__plan-row:last-child {
+  border-bottom: none;
+}
+
+.phd-popup__plan-row-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.phd-popup__plan-row-name {
   font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
+  color: #1e293b;
 }
-.phd-popup__upgrade-btn:hover { background: #dbeafe; }
-.phd-popup__upgrade-btn:disabled { opacity: 0.5; cursor: default; }
 
-.phd-popup__upgrade-btn--pro {
-  background: #fffbeb;
-  border-color: #fde68a;
+.phd-popup__plan-row-detail {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.phd-popup__plan-row-price {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.phd-popup__plan-row-buy {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+.phd-popup__plan-row-buy:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+.phd-popup__plan-row--pro .phd-popup__plan-row-buy:hover {
+  border-color: #b45309;
   color: #b45309;
 }
-.phd-popup__upgrade-btn--pro:hover { background: #fef3c7; }
 
 .phd-popup__label {
   display: block;

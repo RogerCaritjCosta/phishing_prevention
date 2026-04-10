@@ -584,8 +584,10 @@ function renderPlanInfo(planType, planExpiresAt, role) {
   } else {
     upgradeCard.style.display = "";
     const hideBasic = planType === "basic";
-    upgradeButtons.querySelector('[data-plan="basic"]').style.display = hideBasic ? "none" : "";
-    subscriptionButtons.querySelector('[data-plan="basic_sub"]').style.display = hideBasic ? "none" : "";
+    const basicRow = upgradeButtons.querySelector('[data-plan="basic"]');
+    const basicSubRow = subscriptionButtons.querySelector('[data-plan="basic_sub"]');
+    if (basicRow) basicRow.style.display = hideBasic ? "none" : "";
+    if (basicSubRow) basicSubRow.style.display = hideBasic ? "none" : "";
   }
 }
 
@@ -606,27 +608,25 @@ async function loadPrices() {
       const limit = PLAN_LIMITS_DISPLAY[info.base_plan] || "?";
       const symbol = info.currency === "EUR" ? "\u20AC" : info.currency;
       const price = info.amount % 1 === 0 ? info.amount.toFixed(0) : info.amount.toFixed(2).replace(".", ",");
-      const dayLabel = t("day") || "day";
+      const priceEl = document.querySelector(`[data-price-for="${planKey}"]`);
+      if (!priceEl) continue;
       const suffix = info.recurring === "month" ? `/${t("mo") || "mo"}` : "";
-      btn.textContent = `${label} \u2014 ${limit}/${dayLabel} \u2014 ${price}${symbol}${suffix}`;
+      priceEl.textContent = `${price}${symbol}${suffix}`;
     }
   } catch {}
 }
 
 // ── Upgrade buttons ─────────────────────────────────────
-document.querySelectorAll(".phd-popup__upgrade-btn").forEach((btn) => {
+document.querySelectorAll(".phd-popup__plan-row-buy").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const plan = btn.dataset.plan;
     btn.disabled = true;
-    const origText = btn.textContent;
-    btn.textContent = t("opening_checkout");
     try {
       await sendMsg("createCheckout", { plan });
     } catch (err) {
       flash(err.message, "err");
     } finally {
       btn.disabled = false;
-      btn.textContent = origText;
     }
   });
 });
