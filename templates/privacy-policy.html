@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishBuster - Privacy Policy</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #1e293b; line-height: 1.7; }
+    h1 { font-size: 28px; margin-bottom: 4px; }
+    h2 { font-size: 20px; margin-top: 32px; color: #334155; }
+    .date { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+    ul { padding-left: 24px; }
+    li { margin-bottom: 6px; }
+    a { color: #3b82f6; }
+  </style>
+</head>
+<body>
+  <h1>PhishBuster - Privacy Policy</h1>
+  <p class="date">Last updated: April 10, 2026</p>
+
+  <h2>1. What PhishBuster Does</h2>
+  <p>PhishBuster is a browser extension that analyzes emails in Gmail for phishing indicators. It extracts the email sender, subject, and body content, sends it to our analysis backend, and displays the results as a banner inside Gmail.</p>
+
+  <h2>2. Data We Collect</h2>
+  <ul>
+    <li><strong>Email content for analysis:</strong> When you open an email in Gmail, PhishBuster extracts the sender address, subject line, and body text. This data is sent to our backend server exclusively for phishing analysis and is not stored after the analysis is complete.</li>
+    <li><strong>Account information:</strong> When you register, we store your email address and a hashed password via Firebase Authentication. We never have access to your plaintext password.</li>
+    <li><strong>Usage data:</strong> We store a daily count of analyses performed, per user, to manage usage quotas. No email content is included in this data.</li>
+    <li><strong>User preferences:</strong> Language selection, trusted senders, and trusted domains are stored locally in your browser via Chrome Storage.</li>
+  </ul>
+
+  <h2>3. Data We Do NOT Collect</h2>
+  <ul>
+    <li>We do not read, store, or index your emails beyond the momentary analysis.</li>
+    <li>We do not collect browsing history, contacts, or any data outside of Gmail.</li>
+    <li>We do not use cookies or tracking pixels.</li>
+    <li>We do not collect analytics or telemetry data.</li>
+  </ul>
+
+  <h2>4. How We Use Your Data</h2>
+  <ul>
+    <li><strong>Phishing analysis:</strong> Email content is sent to our backend, analyzed in real-time by our detection engine (URL analysis, content analysis, header verification, and optional external API checks via VirusTotal, Google Safe Browsing, and PhishTank), and the result is returned to the extension. The email content is not persisted.</li>
+    <li><strong>Authentication:</strong> Your email and password hash are used solely to authenticate you and manage your account.</li>
+    <li><strong>Quota management:</strong> Daily usage counts are stored in Firebase Firestore to enforce fair usage limits.</li>
+  </ul>
+
+  <h2>5. Third-Party Services</h2>
+  <p>PhishBuster uses the following third-party services:</p>
+  <ul>
+    <li><strong>Firebase Authentication</strong> (Google) &mdash; For user registration and login. Subject to <a href="https://firebase.google.com/support/privacy">Firebase Privacy Policy</a>.</li>
+    <li><strong>Firebase Firestore</strong> (Google) &mdash; For storing usage quotas. Subject to <a href="https://firebase.google.com/support/privacy">Firebase Privacy Policy</a>.</li>
+    <li><strong>VirusTotal</strong> (optional) &mdash; URLs found in emails may be checked against VirusTotal's database. Subject to <a href="https://docs.virustotal.com/docs/privacy-policy">VirusTotal Privacy Policy</a>.</li>
+    <li><strong>Google Safe Browsing</strong> (optional) &mdash; URLs may be checked against Google's threat database. Subject to <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</li>
+    <li><strong>PhishTank</strong> (optional) &mdash; URLs may be checked against PhishTank's phishing database. Subject to <a href="https://www.phishtank.com/terms.php">PhishTank Terms</a>.</li>
+  </ul>
+
+  <h2>6. Data Security</h2>
+  <p>All communication between the extension and our backend is encrypted via HTTPS. Authentication tokens are managed by Firebase and stored locally in your browser. We follow security best practices including SPF/DKIM/DMARC verification and JWT token validation.</p>
+
+  <h2>7. Data Retention</h2>
+  <ul>
+    <li><strong>Email content:</strong> Not stored. Analyzed in memory and discarded immediately.</li>
+    <li><strong>Account data:</strong> Retained until you request deletion.</li>
+    <li><strong>Usage data:</strong> Daily counts are retained for quota management purposes.</li>
+  </ul>
+
+  <h2>8. Your Rights</h2>
+  <p>You can:</p>
+  <ul>
+    <li>Uninstall the extension at any time to stop all data processing.</li>
+    <li>Request deletion of your account and associated data by contacting us.</li>
+    <li>Clear your local trusted senders and preferences from the extension settings.</li>
+  </ul>
+
+  <h2>9. Children's Privacy</h2>
+  <p>PhishBuster is not intended for children under 13. We do not knowingly collect data from children.</p>
+
+  <h2>10. Changes to This Policy</h2>
+  <p>We may update this policy from time to time. Changes will be posted on this page with an updated date.</p>
+
+  <h2>11. Contact</h2>
+  <p>For questions about this privacy policy or to request data deletion, contact us at: <strong>roger.caritj@gmail.com</strong></p>
+</body>
+</html>

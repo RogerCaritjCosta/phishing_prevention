@@ -21,4 +21,9 @@ def create_app():
         from flask import render_template
         return render_template("index.html")
 
+    @app.route("/privacy-policy")
+    def privacy_policy():
+        from flask import render_template
+        return render_template("privacy-policy.html")
+
     return app
