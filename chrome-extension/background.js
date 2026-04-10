@@ -2,7 +2,7 @@ const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 const FIREBASE_API_KEY = "AIzaSyBrXR9gC0Iw66XuItJmQYzU8e0yNgVgmLM";
 const FIREBASE_PROJECT_ID = "universal-login-hub";
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
-const GOOGLE_CLIENT_ID = ""; // TODO: Set from Firebase Console → Auth → Google → Web client ID
+const GOOGLE_CLIENT_ID = "400291790289-8v9p8o2adjrp3mp364tv5jjm27svned9.apps.googleusercontent.com";
 
 function fetchWithTimeout(url, options, timeoutMs = 60000) {
   return Promise.race([
