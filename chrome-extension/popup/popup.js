@@ -188,7 +188,6 @@ const logoutBtn      = $("logoutBtn");
 const langGroup     = $("langGroup");
 const saveMsg       = $("saveMsg");
 const statusDot     = $("statusDot");
-const statusText    = $("statusText");
 const trustedList   = $("trustedList");
 const trustedInput  = $("trustedInput");
 const addTrustedBtn = $("addTrustedBtn");
@@ -310,15 +309,12 @@ langGroup.addEventListener("click", (e) => {
 // ── Health check ─────────────────────────────────────────
 async function checkHealth() {
   statusDot.className = "phd-popup__dot";
-  statusText.textContent = t("checking");
   try {
     const resp = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(60000) });
     if (!resp.ok) throw new Error();
     statusDot.classList.add("phd-popup__dot--ok");
-    statusText.textContent = t("connected");
   } catch {
     statusDot.classList.add("phd-popup__dot--error");
-    statusText.textContent = t("backend_unreachable");
   }
 }
 
