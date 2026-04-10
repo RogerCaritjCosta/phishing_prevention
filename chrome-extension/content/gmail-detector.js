@@ -352,13 +352,12 @@
 
   // ── Analysis orchestration ──────────────────────────────
 
+  let forceNext = false;
+
   function forceAnalyzeEmail() {
+    forceNext = true;
     const emailId = getEmailIdFromHash();
-    if (emailId) {
-      delete cache[emailId];
-      cache[emailId] = "__force__";
-    }
-    currentEmailId = null;
+    if (emailId) delete cache[emailId];
     analyzeEmail();
   }
 
@@ -366,13 +365,14 @@
     const emailId = getEmailIdFromHash();
     if (!emailId) return;
 
-    // Check cache (unless forced)
-    if (cache[emailId] && cache[emailId] !== "__force__") {
+    const forced = forceNext;
+    forceNext = false;
+
+    // Check cache
+    if (!forced && cache[emailId]) {
       renderBanner(cache[emailId]);
       return;
     }
-    const forced = cache[emailId] === "__force__";
-    if (forced) delete cache[emailId];
 
     // Check if user is logged in
     try {
@@ -387,17 +387,17 @@
     }
 
     // Check if sender is trusted and skip is enabled
-    try {
-      const bodyEl = await waitForEmailBody();
-      const sender = extractSender();
-      currentSender = sender;
+    if (!forced) {
+      try {
+        const bodyEl = await waitForEmailBody();
+        const sender = extractSender();
+        currentSender = sender;
 
-      if (!forced && shouldSkipSender(sender)) {
-        renderSkippedBanner(sender, forceAnalyzeEmail);
-        return;
-      }
-    } catch {
-      // body not ready yet, continue with normal flow
+        if (shouldSkipSender(sender)) {
+          renderSkippedBanner(sender, forceAnalyzeEmail);
+          return;
+        }
+      } catch {}
     }
 
     renderLoadingBanner();
