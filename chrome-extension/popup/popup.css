@@ -272,29 +272,32 @@ body {
 
 .phd-popup__lang-group {
   display: flex;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid #cbd5e1;
+  gap: 2px;
   flex-shrink: 0;
 }
 
 .phd-popup__lang-btn {
-  padding: 3px 7px;
+  padding: 0;
   border: none;
-  background: #f1f5f9;
-  color: #64748b;
+  background: none;
+  color: #94a3b8;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
-  border-right: 1px solid #cbd5e1;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
-.phd-popup__lang-btn:last-child {
-  border-right: none;
+.phd-popup__lang-btn:hover {
+  color: #475569;
 }
 .phd-popup__lang-btn--active {
-  background: #3b82f6;
-  color: #fff;
+  color: #1e293b;
+  font-weight: 700;
+}
+.phd-popup__lang-btn + .phd-popup__lang-btn::before {
+  content: "/";
+  color: #cbd5e1;
+  margin-right: 2px;
+  font-weight: 400;
 }
 
 .phd-popup__save {
