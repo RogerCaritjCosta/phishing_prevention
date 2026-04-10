@@ -573,7 +573,7 @@ resendBtn.addEventListener("click", async () => {
   try {
     await sendMsg("resendVerification", {
       email: pendingVerifyEmail,
-      language: currentLang,
+      password: pendingVerifyPassword,
     });
     verifyMsg.textContent = t("resend_ok");
     verifyMsg.className = "phd-popup__msg phd-popup__msg--ok";

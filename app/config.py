@@ -22,9 +22,5 @@ class Config:
     # Firebase Admin (base64-encoded service account JSON)
     FIREBASE_SERVICE_ACCOUNT = os.getenv("FIREBASE_SERVICE_ACCOUNT", "")
 
-    # Email (Resend)
-    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
-    RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "PhishBuster <onboarding@resend.dev>")
-
     # Rate limiting
     VIRUSTOTAL_REQUESTS_PER_MINUTE = 4
