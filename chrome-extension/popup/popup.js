@@ -187,7 +187,6 @@ const backToLoginBtn = $("backToLoginBtn");
 
 // ── App elements ─────────────────────────────────────────
 const langGroup     = $("langGroup");
-const saveBtn       = $("saveBtn");
 const saveMsg       = $("saveMsg");
 const statusDot     = $("statusDot");
 const statusText    = $("statusText");
@@ -363,7 +362,7 @@ logoutBtn.addEventListener("click", async () => {
   showAuth();
 });
 
-// ── Language selector ────────────────────────────────────
+// ── Language selector (auto-save on click) ──────────────
 function getActiveLang() {
   const active = langGroup.querySelector(".phd-popup__lang-btn--active");
   return active ? active.dataset.lang : "en";
@@ -377,17 +376,16 @@ function setActiveLang(lang) {
 
 langGroup.addEventListener("click", (e) => {
   const btn = e.target.closest(".phd-popup__lang-btn");
-  if (!btn) return;
-  setActiveLang(btn.dataset.lang);
-});
+  if (!btn || btn.dataset.lang === currentLang) return;
 
-// ── Save settings ────────────────────────────────────────
-saveBtn.addEventListener("click", () => {
-  const language = getActiveLang();
+  const language = btn.dataset.lang;
   currentLang = language;
+  setActiveLang(language);
   applyI18n();
+  // Re-render dynamic content with new language
+  loadDailyUsage();
+
   chrome.storage.sync.set({ language }, () => {
-    flash(t("settings_saved"), "ok");
     chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
       for (const tab of tabs) {
         chrome.tabs.sendMessage(tab.id, { action: "settingsUpdated", language }).catch(() => {});

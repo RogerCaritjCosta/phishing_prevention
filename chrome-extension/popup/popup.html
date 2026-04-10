@@ -6,7 +6,14 @@
 </head>
 <body>
   <div class="phd-popup">
-    <h1 class="phd-popup__title">PhishBuster</h1>
+    <div class="phd-popup__header">
+      <h1 class="phd-popup__title">PhishBuster</h1>
+      <div class="phd-popup__lang-group" id="langGroup">
+        <button class="phd-popup__lang-btn phd-popup__lang-btn--active" data-lang="en">ENG</button>
+        <button class="phd-popup__lang-btn" data-lang="es">ESP</button>
+        <button class="phd-popup__lang-btn" data-lang="ca">CAT</button>
+      </div>
+    </div>
 
     <!-- Auth: Login/Register -->
     <div id="authSection" class="phd-popup__auth" style="display:none;">
@@ -66,14 +73,6 @@
         </div>
       </div>
 
-      <label class="phd-popup__label" data-i18n="language">Language</label>
-      <div class="phd-popup__lang-group" id="langGroup">
-        <button class="phd-popup__lang-btn phd-popup__lang-btn--active" data-lang="en">English</button>
-        <button class="phd-popup__lang-btn" data-lang="es">Espa&ntilde;ol</button>
-        <button class="phd-popup__lang-btn" data-lang="ca">Catal&agrave;</button>
-      </div>
-
-      <button id="saveBtn" class="phd-popup__save" data-i18n="save">Save</button>
       <div id="saveMsg" class="phd-popup__msg"></div>
 
       <div class="phd-popup__section">
