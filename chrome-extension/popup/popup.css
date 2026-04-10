@@ -34,46 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.phd-popup__auth-tabs {
-  display: flex;
-  gap: 0;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #cbd5e1;
-  margin-bottom: 4px;
-}
-
-.phd-popup__auth-tab {
-  flex: 1;
-  padding: 6px;
-  border: none;
-  background: #f1f5f9;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.phd-popup__auth-tab--active {
-  background: #3b82f6;
-  color: #fff;
-}
-
-.phd-popup__divider {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 4px 0;
-  color: #94a3b8;
-  font-size: 11px;
-}
-.phd-popup__divider::before,
-.phd-popup__divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #e2e8f0;
+  padding: 8px 0;
 }
 
 .phd-popup__google-btn {
@@ -98,30 +59,6 @@ body {
 .phd-popup__google-btn:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.phd-popup__password-wrap {
-  position: relative;
-  display: flex;
-}
-.phd-popup__password-wrap .phd-popup__input {
-  padding-right: 32px;
-}
-.phd-popup__eye {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 2px;
-  line-height: 1;
-  color: #94a3b8;
-}
-.phd-popup__eye:hover {
-  color: #475569;
 }
 
 .phd-popup__user-bar {
@@ -388,51 +325,6 @@ body {
 }
 .phd-popup__msg--err {
   color: #dc2626;
-}
-
-/* ── Verify email ────────────────────────────────────── */
-.phd-popup__verify {
-  text-align: center;
-  padding: 8px 0;
-}
-
-.phd-popup__verify-icon {
-  font-size: 36px;
-  margin-bottom: 8px;
-}
-
-.phd-popup__verify-title {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  color: #1e293b;
-}
-
-.phd-popup__verify-text {
-  font-size: 12px;
-  color: #475569;
-  line-height: 1.5;
-  margin-bottom: 4px;
-}
-
-.phd-popup__verify-hint {
-  font-size: 11px;
-  color: #94a3b8;
-  font-style: italic;
-  margin-bottom: 4px;
-}
-
-.phd-popup__link-btn {
-  background: none;
-  border: none;
-  color: #3b82f6;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 4px 0;
-  margin-top: 8px;
-}
-.phd-popup__link-btn:hover {
-  text-decoration: underline;
 }
 
 /* ── Collapsible cards ────────────────────────────────── */

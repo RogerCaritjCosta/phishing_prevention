@@ -177,19 +177,9 @@ function applyI18n() {
 // ── Auth elements ────────────────────────────────────────
 const authSection    = $("authSection");
 const appSection     = $("appSection");
-const verifySection  = $("verifySection");
-const tabLogin       = $("tabLogin");
-const tabRegister    = $("tabRegister");
-const authEmail      = $("authEmail");
-const authPassword   = $("authPassword");
-const authBtn        = $("authBtn");
 const authMsg        = $("authMsg");
 const userEmailEl    = $("userEmail");
 const logoutBtn      = $("logoutBtn");
-const verifyEmailEl  = $("verifyEmail");
-const resendBtn      = $("resendBtn");
-const verifyMsg      = $("verifyMsg");
-const backToLoginBtn = $("backToLoginBtn");
 
 // ── App elements ─────────────────────────────────────────
 const langGroup     = $("langGroup");
@@ -215,9 +205,6 @@ const upgradeButtons  = $("upgradeButtons");
 const sendersCount    = $("sendersCount");
 const domainsCount    = $("domainsCount");
 
-// ── Auth state ───────────────────────────────────────────
-let authMode = "login"; // "login" or "register"
-
 function sendMsg(action, data = {}) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ action, ...data }, (resp) => {
@@ -242,28 +229,14 @@ chrome.storage.sync.get({ language: "en" }, (items) => {
   });
 });
 
-// ── Pending verification state ──────────────────────────
-let pendingVerifyEmail = "";
-let pendingVerifyPassword = "";
-
 function showAuth() {
   authSection.style.display = "";
   appSection.style.display = "none";
-  verifySection.style.display = "none";
-}
-
-function showVerify(email) {
-  authSection.style.display = "none";
-  appSection.style.display = "none";
-  verifySection.style.display = "";
-  verifyEmailEl.textContent = email;
-  verifyMsg.textContent = "";
 }
 
 function showApp(email) {
   authSection.style.display = "none";
   appSection.style.display = "";
-  verifySection.style.display = "none";
   userEmailEl.textContent = email;
 
   chrome.storage.sync.get(
@@ -280,84 +253,6 @@ function showApp(email) {
   );
 }
 
-// ── Auth tabs ────────────────────────────────────────────
-tabLogin.addEventListener("click", () => {
-  authMode = "login";
-  tabLogin.classList.add("phd-popup__auth-tab--active");
-  tabRegister.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = t("login");
-  authMsg.textContent = "";
-});
-
-tabRegister.addEventListener("click", () => {
-  authMode = "register";
-  tabRegister.classList.add("phd-popup__auth-tab--active");
-  tabLogin.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = t("register");
-  authMsg.textContent = "";
-});
-
-// ── Auth action ──────────────────────────────────────────
-authBtn.addEventListener("click", async () => {
-  const email = authEmail.value.trim();
-  const password = authPassword.value;
-  if (!email || !password) {
-    authMsg.textContent = t("fill_all_fields");
-    authMsg.className = "phd-popup__msg phd-popup__msg--err";
-    return;
-  }
-  if (authMode === "register" && email.includes("+")) {
-    authMsg.textContent = t("no_plus_email");
-    authMsg.className = "phd-popup__msg phd-popup__msg--err";
-    return;
-  }
-  if (password.length < 6) {
-    authMsg.textContent = t("password_too_short");
-    authMsg.className = "phd-popup__msg phd-popup__msg--err";
-    return;
-  }
-
-  authBtn.disabled = true;
-  authBtn.textContent = t("loading");
-  authMsg.textContent = "";
-
-  try {
-    const action = authMode === "login" ? "signIn" : "signUp";
-    const result = await sendMsg(action, { email, password });
-
-    if (result.verificationSent) {
-      pendingVerifyEmail = email;
-      pendingVerifyPassword = password;
-      showVerify(email);
-    } else {
-      showApp(result.email);
-    }
-  } catch (err) {
-    if (err.message.includes("EMAIL_NOT_VERIFIED")) {
-      pendingVerifyEmail = email;
-      pendingVerifyPassword = password;
-      showVerify(email);
-    } else {
-      const msg = err.message
-        .replace("EMAIL_NOT_FOUND", t("email_not_found"))
-        .replace("INVALID_PASSWORD", t("wrong_password"))
-        .replace("INVALID_LOGIN_CREDENTIALS", t("invalid_credentials"))
-        .replace("EMAIL_EXISTS", t("email_exists"))
-        .replace("WEAK_PASSWORD", t("weak_password"))
-        .replace("INVALID_EMAIL", t("invalid_email"));
-      authMsg.textContent = msg;
-      authMsg.className = "phd-popup__msg phd-popup__msg--err";
-    }
-  } finally {
-    authBtn.disabled = false;
-    authBtn.textContent = authMode === "login" ? t("login") : t("register");
-  }
-});
-
-authPassword.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") authBtn.click();
-});
-
 // ── Google Sign-In ──────────────────────────────────────
 const googleBtn = $("googleBtn");
 googleBtn.addEventListener("click", async () => {
@@ -372,13 +267,6 @@ googleBtn.addEventListener("click", async () => {
   } finally {
     googleBtn.disabled = false;
   }
-});
-
-// ── Toggle password visibility ──────────────────────────
-$("togglePassword").addEventListener("click", () => {
-  const isHidden = authPassword.type === "password";
-  authPassword.type = isHidden ? "text" : "password";
-  $("togglePassword").textContent = isHidden ? "\u25CF" : "\u{1F441}";
 });
 
 // ── Logout ───────────────────────────────────────────────
@@ -581,47 +469,6 @@ addDomainBtn.addEventListener("click", () => {
 });
 
 domainInput.addEventListener("keydown", (e) => { if (e.key === "Enter") addDomainBtn.click(); });
-
-// ── Email verification ──────────────────────────────────
-resendBtn.addEventListener("click", async () => {
-  if (!pendingVerifyEmail || !pendingVerifyPassword) {
-    verifyMsg.textContent = t("resend_go_back");
-    verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
-    return;
-  }
-  resendBtn.disabled = true;
-  resendBtn.textContent = t("resend_sending");
-  verifyMsg.textContent = "";
-  try {
-    await sendMsg("resendVerification", {
-      email: pendingVerifyEmail,
-      password: pendingVerifyPassword,
-    });
-    verifyMsg.textContent = t("resend_ok");
-    verifyMsg.className = "phd-popup__msg phd-popup__msg--ok";
-  } catch (err) {
-    let msg = err.message;
-    if (msg.includes("TOO_MANY_ATTEMPTS_TRY_LATER")) {
-      msg = t("resend_rate_limit");
-    }
-    verifyMsg.textContent = msg;
-    verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
-  } finally {
-    resendBtn.disabled = false;
-    resendBtn.textContent = t("resend");
-  }
-});
-
-backToLoginBtn.addEventListener("click", () => {
-  pendingVerifyEmail = "";
-  pendingVerifyPassword = "";
-  authMode = "login";
-  tabLogin.classList.add("phd-popup__auth-tab--active");
-  tabRegister.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = t("login");
-  authMsg.textContent = "";
-  showAuth();
-});
 
 // ── Daily usage / quota ─────────────────────────────────
 async function loadDailyUsage() {
