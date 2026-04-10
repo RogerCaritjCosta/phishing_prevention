@@ -49,6 +49,8 @@ const POPUP_I18N = {
     sub_basic: "Basic \u2014 50/day \u2014 0.89\u20AC/mo",
     sub_pro: "Pro \u2014 250/day \u2014 2.69\u20AC/mo",
     opening_checkout: "Opening checkout...",
+    mo: "mo",
+    day: "day",
     skip_senders: "Don't analyze",
     skip_domains: "Don't analyze",
     trusted_senders: "Trusted senders",
@@ -105,6 +107,8 @@ const POPUP_I18N = {
     sub_basic: "Basic \u2014 50/d\u00EDa \u2014 0,89\u20AC/mes",
     sub_pro: "Pro \u2014 250/d\u00EDa \u2014 2,69\u20AC/mes",
     opening_checkout: "Abriendo pago...",
+    mo: "mes",
+    day: "d\u00EDa",
     language: "Idioma",
     save: "Guardar",
     settings_saved: "Ajustes guardados",
@@ -164,6 +168,8 @@ const POPUP_I18N = {
     sub_basic: "Basic \u2014 50/dia \u2014 0,89\u20AC/mes",
     sub_pro: "Pro \u2014 250/dia \u2014 2,69\u20AC/mes",
     opening_checkout: "Obrint pagament...",
+    mo: "mes",
+    day: "dia",
     language: "Idioma",
     save: "Desar",
     settings_saved: "Ajustos desats",
@@ -267,6 +273,7 @@ function showApp(email) {
       applyI18n();
       checkHealth();
       loadDailyUsage();
+      loadPrices();
       renderTrustedList(items.trustedSenders);
       renderDomainList(items.trustedDomains);
       skipSendersCheck.checked = items.skipSenders;
@@ -580,6 +587,30 @@ function renderPlanInfo(planType, planExpiresAt, role) {
     upgradeButtons.querySelector('[data-plan="basic"]').style.display = hideBasic ? "none" : "";
     subscriptionButtons.querySelector('[data-plan="basic_sub"]').style.display = hideBasic ? "none" : "";
   }
+}
+
+// ── Dynamic prices ──────────────────────────────────────
+const PLAN_LABELS = { basic: "Basic", pro: "Pro" };
+const PLAN_LIMITS_DISPLAY = { basic: "50", pro: "250" };
+
+async function loadPrices() {
+  try {
+    const resp = await fetch(`${BACKEND_URL}/prices`, { signal: AbortSignal.timeout(10000) });
+    if (!resp.ok) return;
+    const prices = await resp.json();
+
+    for (const [planKey, info] of Object.entries(prices)) {
+      const btn = document.querySelector(`.phd-popup__upgrade-btn[data-plan="${planKey}"]`);
+      if (!btn) continue;
+      const label = PLAN_LABELS[info.base_plan] || info.base_plan;
+      const limit = PLAN_LIMITS_DISPLAY[info.base_plan] || "?";
+      const symbol = info.currency === "EUR" ? "\u20AC" : info.currency;
+      const price = info.amount % 1 === 0 ? info.amount.toFixed(0) : info.amount.toFixed(2).replace(".", ",");
+      const dayLabel = t("day") || "day";
+      const suffix = info.recurring === "month" ? `/${t("mo") || "mo"}` : "";
+      btn.textContent = `${label} \u2014 ${limit}/${dayLabel} \u2014 ${price}${symbol}${suffix}`;
+    }
+  } catch {}
 }
 
 // ── Upgrade buttons ─────────────────────────────────────

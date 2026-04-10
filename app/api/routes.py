@@ -77,6 +77,37 @@ def translations(lang):
 
 # ── Payments ─────────────────────────────────────────────
 
+@api_bp.route("/prices", methods=["GET"])
+def get_prices():
+    config = current_app.config
+    stripe.api_key = config.get("STRIPE_SECRET_KEY")
+    if not stripe.api_key:
+        return jsonify({"error": "Payments not configured"}), 503
+
+    results = {}
+    for plan_key, pc in PLAN_CONFIG.items():
+        price_id = config.get(pc["config_key"], "")
+        if not price_id:
+            continue
+        try:
+            price = stripe.Price.retrieve(price_id)
+            amount = price.unit_amount / 100  # cents to euros
+            currency = price.currency.upper()
+            recurring = None
+            if price.recurring:
+                recurring = price.recurring.interval  # "month", "year"
+            results[plan_key] = {
+                "amount": amount,
+                "currency": currency,
+                "recurring": recurring,
+                "base_plan": pc["base_plan"],
+            }
+        except Exception:
+            pass
+
+    return jsonify(results)
+
+
 PLAN_CONFIG = {
     "basic":     {"config_key": "STRIPE_PRICE_BASIC",     "mode": "payment",      "base_plan": "basic"},
     "pro":       {"config_key": "STRIPE_PRICE_PRO",       "mode": "payment",      "base_plan": "pro"},
