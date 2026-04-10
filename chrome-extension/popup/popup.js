@@ -2,6 +2,157 @@ const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 
 const $ = (id) => document.getElementById(id);
 
+// ── Popup translations ──────────────────────────────────
+const POPUP_I18N = {
+  en: {
+    login: "Log in",
+    register: "Register",
+    email_placeholder: "Email",
+    password_placeholder: "Password",
+    loading: "Loading...",
+    fill_all_fields: "Please fill in all fields",
+    no_plus_email: "Email addresses with '+' are not allowed",
+    password_too_short: "Password must be at least 6 characters",
+    email_not_found: "Email not found",
+    wrong_password: "Wrong password",
+    invalid_credentials: "Invalid email or password",
+    email_exists: "Email already registered",
+    weak_password: "Password too weak (min 6 chars)",
+    invalid_email: "Invalid email address",
+    verify_title: "Check your email",
+    verify_text_before: "We sent a verification link to",
+    verify_text_after: "Click the link to activate your account.",
+    verify_hint: "Can't find it? Check your spam/junk folder.",
+    resend: "Resend verification email",
+    resend_sending: "Sending...",
+    resend_ok: "Verification email sent! Check your spam folder too.",
+    resend_rate_limit: "Too many attempts. Please wait 15-60 minutes before trying again, and check your spam folder.",
+    resend_go_back: "Please go back and log in again",
+    back_to_login: "Back to login",
+    logout: "Log out",
+    checking: "Checking...",
+    connected: "Connected",
+    backend_unreachable: "Backend unreachable",
+    analyses_today: "analyses today",
+    add_more: "+ 15 more",
+    adding: "Adding...",
+    added_more: "+15 analyses added",
+    language: "Language",
+    save: "Save",
+    settings_saved: "Settings saved",
+    trusted_senders: "Trusted senders",
+    no_trusted_senders: "No trusted senders yet",
+    already_trusted: "Already trusted",
+    import_csv: "Import CSV",
+    no_valid_emails: "No valid emails found",
+    trusted_domains: "Trusted domains",
+    no_trusted_domains: "No trusted domains yet",
+  },
+  es: {
+    login: "Iniciar sesión",
+    register: "Registrarse",
+    email_placeholder: "Email",
+    password_placeholder: "Contraseña",
+    loading: "Cargando...",
+    fill_all_fields: "Rellena todos los campos",
+    no_plus_email: "No se permiten emails con '+'",
+    password_too_short: "La contraseña debe tener al menos 6 caracteres",
+    email_not_found: "Email no encontrado",
+    wrong_password: "Contraseña incorrecta",
+    invalid_credentials: "Email o contraseña incorrectos",
+    email_exists: "Email ya registrado",
+    weak_password: "Contraseña demasiado débil (mín. 6 caracteres)",
+    invalid_email: "Email no válido",
+    verify_title: "Revisa tu email",
+    verify_text_before: "Hemos enviado un enlace de verificación a",
+    verify_text_after: "Haz clic en el enlace para activar tu cuenta.",
+    verify_hint: "¿No lo encuentras? Revisa la carpeta de spam.",
+    resend: "Reenviar email de verificación",
+    resend_sending: "Enviando...",
+    resend_ok: "¡Email de verificación enviado! Revisa también la carpeta de spam.",
+    resend_rate_limit: "Demasiados intentos. Espera 15-60 minutos e inténtalo de nuevo. Revisa tu carpeta de spam.",
+    resend_go_back: "Vuelve atrás e inicia sesión de nuevo",
+    back_to_login: "Volver al inicio de sesión",
+    logout: "Cerrar sesión",
+    checking: "Comprobando...",
+    connected: "Conectado",
+    backend_unreachable: "Backend no disponible",
+    analyses_today: "análisis hoy",
+    add_more: "+ 15 más",
+    adding: "Añadiendo...",
+    added_more: "+15 análisis añadidos",
+    language: "Idioma",
+    save: "Guardar",
+    settings_saved: "Ajustes guardados",
+    trusted_senders: "Remitentes de confianza",
+    no_trusted_senders: "Sin remitentes de confianza",
+    already_trusted: "Ya está en la lista",
+    import_csv: "Importar CSV",
+    no_valid_emails: "No se encontraron emails válidos",
+    trusted_domains: "Dominios de confianza",
+    no_trusted_domains: "Sin dominios de confianza",
+  },
+  ca: {
+    login: "Iniciar sessió",
+    register: "Registrar-se",
+    email_placeholder: "Email",
+    password_placeholder: "Contrasenya",
+    loading: "Carregant...",
+    fill_all_fields: "Omple tots els camps",
+    no_plus_email: "No es permeten emails amb '+'",
+    password_too_short: "La contrasenya ha de tenir almenys 6 caràcters",
+    email_not_found: "Email no trobat",
+    wrong_password: "Contrasenya incorrecta",
+    invalid_credentials: "Email o contrasenya incorrectes",
+    email_exists: "Email ja registrat",
+    weak_password: "Contrasenya massa feble (mínim 6 caràcters)",
+    invalid_email: "Email no vàlid",
+    verify_title: "Revisa el teu email",
+    verify_text_before: "Hem enviat un enllaç de verificació a",
+    verify_text_after: "Fes clic a l'enllaç per activar el teu compte.",
+    verify_hint: "No el trobes? Revisa la carpeta de spam.",
+    resend: "Reenviar email de verificació",
+    resend_sending: "Enviant...",
+    resend_ok: "Email de verificació enviat! Revisa també la carpeta de spam.",
+    resend_rate_limit: "Massa intents. Espera 15-60 minuts i torna-ho a provar. Revisa la carpeta de spam.",
+    resend_go_back: "Torna enrere i inicia sessió de nou",
+    back_to_login: "Tornar a l'inici de sessió",
+    logout: "Tancar sessió",
+    checking: "Comprovant...",
+    connected: "Connectat",
+    backend_unreachable: "Backend no disponible",
+    analyses_today: "anàlisis avui",
+    add_more: "+ 15 més",
+    adding: "Afegint...",
+    added_more: "+15 anàlisis afegides",
+    language: "Idioma",
+    save: "Desar",
+    settings_saved: "Ajustos desats",
+    trusted_senders: "Remitents de confiança",
+    no_trusted_senders: "Sense remitents de confiança",
+    already_trusted: "Ja està a la llista",
+    import_csv: "Importar CSV",
+    no_valid_emails: "No s'han trobat emails vàlids",
+    trusted_domains: "Dominis de confiança",
+    no_trusted_domains: "Sense dominis de confiança",
+  },
+};
+
+let currentLang = "en";
+
+function t(key) {
+  return POPUP_I18N[currentLang]?.[key] || POPUP_I18N.en[key] || key;
+}
+
+function applyI18n() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+}
+
 // ── Auth elements ────────────────────────────────────────
 const authSection    = $("authSection");
 const appSection     = $("appSection");
@@ -53,12 +204,17 @@ function sendMsg(action, data = {}) {
 }
 
 // Check if user is logged in on popup open
-chrome.storage.local.get(["userEmail", "authToken"], (items) => {
-  if (items.userEmail && items.authToken) {
-    showApp(items.userEmail);
-  } else {
-    showAuth();
-  }
+chrome.storage.sync.get({ language: "en" }, (items) => {
+  currentLang = items.language;
+  applyI18n();
+
+  chrome.storage.local.get(["userEmail", "authToken"], (local) => {
+    if (local.userEmail && local.authToken) {
+      showApp(local.userEmail);
+    } else {
+      showAuth();
+    }
+  });
 });
 
 // ── Pending verification state ──────────────────────────
@@ -88,7 +244,9 @@ function showApp(email) {
   chrome.storage.sync.get(
     { language: "en", trustedSenders: [], trustedDomains: [] },
     (items) => {
+      currentLang = items.language;
       setActiveLang(items.language);
+      applyI18n();
       checkHealth();
       loadDailyUsage();
       renderTrustedList(items.trustedSenders);
@@ -102,7 +260,7 @@ tabLogin.addEventListener("click", () => {
   authMode = "login";
   tabLogin.classList.add("phd-popup__auth-tab--active");
   tabRegister.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = "Log in";
+  authBtn.textContent = t("login");
   authMsg.textContent = "";
 });
 
@@ -110,7 +268,7 @@ tabRegister.addEventListener("click", () => {
   authMode = "register";
   tabRegister.classList.add("phd-popup__auth-tab--active");
   tabLogin.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = "Register";
+  authBtn.textContent = t("register");
   authMsg.textContent = "";
 });
 
@@ -119,23 +277,23 @@ authBtn.addEventListener("click", async () => {
   const email = authEmail.value.trim();
   const password = authPassword.value;
   if (!email || !password) {
-    authMsg.textContent = "Please fill in all fields";
+    authMsg.textContent = t("fill_all_fields");
     authMsg.className = "phd-popup__msg phd-popup__msg--err";
     return;
   }
   if (authMode === "register" && email.includes("+")) {
-    authMsg.textContent = "Email addresses with '+' are not allowed";
+    authMsg.textContent = t("no_plus_email");
     authMsg.className = "phd-popup__msg phd-popup__msg--err";
     return;
   }
   if (password.length < 6) {
-    authMsg.textContent = "Password must be at least 6 characters";
+    authMsg.textContent = t("password_too_short");
     authMsg.className = "phd-popup__msg phd-popup__msg--err";
     return;
   }
 
   authBtn.disabled = true;
-  authBtn.textContent = "Loading...";
+  authBtn.textContent = t("loading");
   authMsg.textContent = "";
 
   try {
@@ -143,7 +301,6 @@ authBtn.addEventListener("click", async () => {
     const result = await sendMsg(action, { email, password });
 
     if (result.verificationSent) {
-      // Registration: show verification screen
       pendingVerifyEmail = email;
       pendingVerifyPassword = password;
       showVerify(email);
@@ -157,18 +314,18 @@ authBtn.addEventListener("click", async () => {
       showVerify(email);
     } else {
       const msg = err.message
-        .replace("EMAIL_NOT_FOUND", "Email not found")
-        .replace("INVALID_PASSWORD", "Wrong password")
-        .replace("INVALID_LOGIN_CREDENTIALS", "Invalid email or password")
-        .replace("EMAIL_EXISTS", "Email already registered")
-        .replace("WEAK_PASSWORD", "Password too weak (min 6 chars)")
-        .replace("INVALID_EMAIL", "Invalid email address");
+        .replace("EMAIL_NOT_FOUND", t("email_not_found"))
+        .replace("INVALID_PASSWORD", t("wrong_password"))
+        .replace("INVALID_LOGIN_CREDENTIALS", t("invalid_credentials"))
+        .replace("EMAIL_EXISTS", t("email_exists"))
+        .replace("WEAK_PASSWORD", t("weak_password"))
+        .replace("INVALID_EMAIL", t("invalid_email"));
       authMsg.textContent = msg;
       authMsg.className = "phd-popup__msg phd-popup__msg--err";
     }
   } finally {
     authBtn.disabled = false;
-    authBtn.textContent = authMode === "login" ? "Log in" : "Register";
+    authBtn.textContent = authMode === "login" ? t("login") : t("register");
   }
 });
 
@@ -210,8 +367,10 @@ langGroup.addEventListener("click", (e) => {
 // ── Save settings ────────────────────────────────────────
 saveBtn.addEventListener("click", () => {
   const language = getActiveLang();
+  currentLang = language;
+  applyI18n();
   chrome.storage.sync.set({ language }, () => {
-    flash("Settings saved", "ok");
+    flash(t("settings_saved"), "ok");
     chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
       for (const tab of tabs) {
         chrome.tabs.sendMessage(tab.id, { action: "settingsUpdated", language }).catch(() => {});
@@ -223,15 +382,15 @@ saveBtn.addEventListener("click", () => {
 // ── Health check ─────────────────────────────────────────
 async function checkHealth() {
   statusDot.className = "phd-popup__dot";
-  statusText.textContent = "Checking...";
+  statusText.textContent = t("checking");
   try {
     const resp = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(60000) });
     if (!resp.ok) throw new Error();
     statusDot.classList.add("phd-popup__dot--ok");
-    statusText.textContent = "Connected";
+    statusText.textContent = t("connected");
   } catch {
     statusDot.classList.add("phd-popup__dot--error");
-    statusText.textContent = "Backend unreachable";
+    statusText.textContent = t("backend_unreachable");
   }
 }
 
@@ -245,7 +404,7 @@ function flash(text, type) {
 // ── Trusted senders ──────────────────────────────────────
 function renderTrustedList(senders) {
   if (!senders || senders.length === 0) {
-    trustedList.innerHTML = '<div class="phd-popup__trusted-empty">No trusted senders yet</div>';
+    trustedList.innerHTML = `<div class="phd-popup__trusted-empty">${t("no_trusted_senders")}</div>`;
     return;
   }
   trustedList.innerHTML = senders.map((s) => `
@@ -278,7 +437,7 @@ addTrustedBtn.addEventListener("click", () => {
   if (!email) return;
   chrome.storage.sync.get({ trustedSenders: [] }, (items) => {
     const list = items.trustedSenders;
-    if (list.includes(email)) { flash("Already trusted", "err"); return; }
+    if (list.includes(email)) { flash(t("already_trusted"), "err"); return; }
     list.push(email);
     chrome.storage.sync.set({ trustedSenders: list }, () => {
       trustedInput.value = "";
@@ -312,7 +471,7 @@ csvFile.addEventListener("change", () => {
       .map((s) => s.trim().toLowerCase().replace(/^["']+|["']+$/g, ""))
       .filter((s) => s && s.includes("@"));
     if (emails.length === 0) {
-      csvMsg.textContent = "No valid emails found";
+      csvMsg.textContent = t("no_valid_emails");
       csvMsg.style.color = "#dc2626";
       return;
     }
@@ -337,7 +496,7 @@ csvFile.addEventListener("change", () => {
 // ── Trusted domains ──────────────────────────────────────
 function renderDomainList(domains) {
   if (!domains || domains.length === 0) {
-    domainList.innerHTML = '<div class="phd-popup__trusted-empty">No trusted domains yet</div>';
+    domainList.innerHTML = `<div class="phd-popup__trusted-empty">${t("no_trusted_domains")}</div>`;
     return;
   }
   domainList.innerHTML = domains.map((d) => `
@@ -356,7 +515,7 @@ addDomainBtn.addEventListener("click", () => {
   if (!domain) return;
   chrome.storage.sync.get({ trustedDomains: [] }, (items) => {
     const list = items.trustedDomains;
-    if (list.includes(domain)) { flash("Already trusted", "err"); return; }
+    if (list.includes(domain)) { flash(t("already_trusted"), "err"); return; }
     list.push(domain);
     chrome.storage.sync.set({ trustedDomains: list }, () => {
       domainInput.value = "";
@@ -371,30 +530,30 @@ domainInput.addEventListener("keydown", (e) => { if (e.key === "Enter") addDomai
 // ── Email verification ──────────────────────────────────
 resendBtn.addEventListener("click", async () => {
   if (!pendingVerifyEmail || !pendingVerifyPassword) {
-    verifyMsg.textContent = "Please go back and log in again";
+    verifyMsg.textContent = t("resend_go_back");
     verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
     return;
   }
   resendBtn.disabled = true;
-  resendBtn.textContent = "Sending...";
+  resendBtn.textContent = t("resend_sending");
   verifyMsg.textContent = "";
   try {
     await sendMsg("resendVerification", {
       email: pendingVerifyEmail,
       password: pendingVerifyPassword,
     });
-    verifyMsg.textContent = "Verification email sent! Check your spam folder too.";
+    verifyMsg.textContent = t("resend_ok");
     verifyMsg.className = "phd-popup__msg phd-popup__msg--ok";
   } catch (err) {
     let msg = err.message;
     if (msg.includes("TOO_MANY_ATTEMPTS_TRY_LATER")) {
-      msg = "Too many attempts. Please wait 15-60 minutes before trying again, and check your spam folder.";
+      msg = t("resend_rate_limit");
     }
     verifyMsg.textContent = msg;
     verifyMsg.className = "phd-popup__msg phd-popup__msg--err";
   } finally {
     resendBtn.disabled = false;
-    resendBtn.textContent = "Resend verification email";
+    resendBtn.textContent = t("resend");
   }
 });
 
@@ -404,7 +563,7 @@ backToLoginBtn.addEventListener("click", () => {
   authMode = "login";
   tabLogin.classList.add("phd-popup__auth-tab--active");
   tabRegister.classList.remove("phd-popup__auth-tab--active");
-  authBtn.textContent = "Log in";
+  authBtn.textContent = t("login");
   authMsg.textContent = "";
   showAuth();
 });
@@ -438,16 +597,16 @@ function renderQuota(count, limit) {
 
 addMoreBtn.addEventListener("click", async () => {
   addMoreBtn.disabled = true;
-  addMoreBtn.textContent = "Adding...";
+  addMoreBtn.textContent = t("adding");
   try {
     const usage = await sendMsg("addMoreAnalyses");
     renderQuota(usage.count, usage.limit);
-    flash("+15 analyses added", "ok");
+    flash(t("added_more"), "ok");
   } catch (err) {
     flash(err.message, "err");
   } finally {
     addMoreBtn.disabled = false;
-    addMoreBtn.textContent = "+ 15 more";
+    addMoreBtn.textContent = t("add_more");
   }
 });
 
