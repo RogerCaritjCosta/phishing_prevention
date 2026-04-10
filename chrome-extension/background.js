@@ -302,18 +302,15 @@ async function handleSignIn(data) {
   return { email: result.email };
 }
 
-async function sendVerificationEmail(idToken) {
-  const resp = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${FIREBASE_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ requestType: "VERIFY_EMAIL", idToken }),
-    }
-  );
+async function sendVerificationEmail(email, language = "en") {
+  const resp = await fetchWithTimeout(`${BACKEND_URL}/send-verification`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, language }),
+  });
   if (!resp.ok) {
-    const err = await resp.json();
-    throw new Error(err.error?.message || "Failed to send verification email");
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to send verification email");
   }
 }
 
@@ -356,31 +353,15 @@ async function handleSignUp(data) {
     await createUserDoc(result.localId, result.email, result.idToken);
   } catch {}
 
-  // Send verification email
-  await sendVerificationEmail(result.idToken);
+  // Send custom verification email via backend
+  await sendVerificationEmail(result.email, data.language || "en");
 
   // Do NOT auto-login — user must verify email first
   return { email: result.email, verificationSent: true };
 }
 
 async function handleResendVerification(data) {
-  // Sign in temporarily to get a token, then send verification email
-  const resp = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: data.email,
-        password: data.password,
-        returnSecureToken: true,
-      }),
-    }
-  );
-  const result = await resp.json();
-  if (result.error) throw new Error(result.error.message);
-
-  await sendVerificationEmail(result.idToken);
+  await sendVerificationEmail(data.email, data.language || "en");
   return { sent: true };
 }
 

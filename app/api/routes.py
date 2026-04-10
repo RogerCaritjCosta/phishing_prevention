@@ -75,6 +75,22 @@ def translations(lang):
     return jsonify(data)
 
 
+@api_bp.route("/send-verification", methods=["POST"])
+def send_verification():
+    data = request.get_json()
+    email = data.get("email", "").strip() if data else ""
+    language = data.get("language", "en")
+    if not email:
+        return jsonify({"error": "Email required"}), 400
+
+    try:
+        from app.firebase import send_verification_email
+        send_verification_email(email, language)
+        return jsonify({"sent": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ── Payments ─────────────────────────────────────────────
 
 VALID_PLANS = ("basic", "pro")
