@@ -69,9 +69,14 @@ async function firestoreGet(path, token) {
   return resp.json();
 }
 
-async function firestoreSet(path, fields, token) {
+async function firestoreSet(path, fields, token, merge = false) {
+  let url = `${FIRESTORE_BASE}/${path}`;
+  if (merge) {
+    const mask = Object.keys(fields).map((k) => `updateMask.fieldPaths=${k}`).join("&");
+    url += `?${mask}`;
+  }
   const body = { fields };
-  const resp = await fetch(`${FIRESTORE_BASE}/${path}`, {
+  const resp = await fetch(url, {
     method: "PATCH",
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -443,7 +448,7 @@ async function handleGoogleSignIn() {
       await firestoreSet(`users/${result.localId}/apps/phishbuster`, {
         role: { stringValue: "unlimited" },
         dailyLimit: { integerValue: "999999" },
-      }, result.idToken);
+      }, result.idToken, true);
     } catch {}
   }
 
