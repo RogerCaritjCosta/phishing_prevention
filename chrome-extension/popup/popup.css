@@ -464,23 +464,24 @@ body {
 .phd-popup__csv-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin-top: 6px;
 }
 
-.phd-popup__csv-btn {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #475569;
-  padding: 4px 10px;
-  border-radius: 4px;
+.phd-popup__icon-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
   cursor: pointer;
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.phd-popup__csv-btn:hover {
-  background: #e2e8f0;
+.phd-popup__icon-btn:hover {
+  color: #3b82f6;
+  background: #f1f5f9;
 }
 
 .phd-popup__csv-msg {

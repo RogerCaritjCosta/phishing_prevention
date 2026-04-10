@@ -189,9 +189,6 @@ const statusText    = $("statusText");
 const trustedList   = $("trustedList");
 const trustedInput  = $("trustedInput");
 const addTrustedBtn = $("addTrustedBtn");
-const csvBtn        = $("csvBtn");
-const csvFile       = $("csvFile");
-const csvMsg        = $("csvMsg");
 const domainList    = $("domainList");
 const domainInput   = $("domainInput");
 const addDomainBtn  = $("addDomainBtn");
@@ -401,7 +398,12 @@ function removeTrusted(sender) {
   });
 }
 
-// ── CSV import ───────────────────────────────────────────
+// ── CSV import / export ─────────────────────────────────
+const csvBtn = $("csvBtn");
+const csvFile = $("csvFile");
+const csvMsg = $("csvMsg");
+const exportBtn = $("exportBtn");
+
 csvBtn.addEventListener("click", () => csvFile.click());
 csvFile.addEventListener("change", () => {
   const file = csvFile.files[0];
@@ -425,7 +427,7 @@ csvFile.addEventListener("change", () => {
       chrome.storage.sync.set({ trustedSenders: list }, () => {
         renderTrustedList(list);
         notifyGmailTabs();
-        csvMsg.textContent = `+${added} emails imported`;
+        csvMsg.textContent = `+${added}`;
         csvMsg.style.color = "#16a34a";
         setTimeout(() => { csvMsg.textContent = ""; }, 3000);
       });
@@ -433,6 +435,20 @@ csvFile.addEventListener("change", () => {
     csvFile.value = "";
   };
   reader.readAsText(file);
+});
+
+exportBtn.addEventListener("click", () => {
+  chrome.storage.sync.get({ trustedSenders: [] }, (items) => {
+    if (!items.trustedSenders.length) return;
+    const csv = items.trustedSenders.join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "trusted_senders.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 });
 
 // ── Trusted domains ──────────────────────────────────────
