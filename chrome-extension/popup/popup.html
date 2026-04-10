@@ -47,16 +47,23 @@
       </div>
 
       <div class="phd-popup__quota">
+        <div class="phd-popup__plan-info">
+          <span class="phd-popup__plan-badge" id="planBadge">Free</span>
+          <span class="phd-popup__plan-expiry" id="planExpiry"></span>
+        </div>
         <div class="phd-popup__quota-info">
           <span class="phd-popup__quota-count" id="quotaCount">0</span>
           <span class="phd-popup__quota-sep">/</span>
-          <span class="phd-popup__quota-limit" id="quotaLimit">15</span>
+          <span class="phd-popup__quota-limit" id="quotaLimit">10</span>
           <span class="phd-popup__quota-label" data-i18n="analyses_today">analyses today</span>
         </div>
         <div class="phd-popup__quota-bar">
           <div class="phd-popup__quota-fill" id="quotaFill"></div>
         </div>
-        <button id="addMoreBtn" class="phd-popup__add-more" data-i18n="add_more">+ 15 more</button>
+        <div class="phd-popup__upgrade-buttons" id="upgradeButtons">
+          <button class="phd-popup__upgrade-btn" data-plan="basic" data-i18n="upgrade_basic">Basic &mdash; 50/day &mdash; 1&euro;</button>
+          <button class="phd-popup__upgrade-btn phd-popup__upgrade-btn--pro" data-plan="pro" data-i18n="upgrade_pro">Pro &mdash; 250/day &mdash; 3&euro;</button>
+        </div>
       </div>
 
       <label class="phd-popup__label" data-i18n="language">Language</label>

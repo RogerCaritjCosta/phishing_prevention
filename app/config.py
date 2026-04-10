@@ -13,5 +13,14 @@ class Config:
     GOOGLE_SAFE_BROWSING_API_KEY = os.getenv("GOOGLE_SAFE_BROWSING_API_KEY", "")
     PHISHTANK_API_KEY = os.getenv("PHISHTANK_API_KEY", "")
 
+    # Stripe
+    STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+    STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+    STRIPE_PRICE_BASIC = os.getenv("STRIPE_PRICE_BASIC", "")
+    STRIPE_PRICE_PRO = os.getenv("STRIPE_PRICE_PRO", "")
+
+    # Firebase Admin (base64-encoded service account JSON)
+    FIREBASE_SERVICE_ACCOUNT = os.getenv("FIREBASE_SERVICE_ACCOUNT", "")
+
     # Rate limiting
     VIRUSTOTAL_REQUESTS_PER_MINUTE = 4

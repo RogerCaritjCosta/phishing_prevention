@@ -13,3 +13,5 @@ marshmallow==3.23.2
 pytest==8.3.4
 gunicorn==22.0.0
 PyJWT[crypto]==2.9.0
+stripe==8.0.0
+firebase-admin==6.4.0

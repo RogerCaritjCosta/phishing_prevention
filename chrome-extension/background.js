@@ -82,43 +82,58 @@ async function firestoreSet(path, fields, token) {
   return resp.json();
 }
 
-async function fetchUserBaseLimit() {
+const PLAN_LIMITS = { free: 10, basic: 50, pro: 250 };
+
+async function fetchUserPlan() {
   try {
     const token = await getAuthToken();
     const { userUid } = await chrome.storage.local.get("userUid");
-    if (!userUid) return 10;
+    if (!userUid) return { planType: "free", dailyLimit: 10, planExpiresAt: null, role: "user" };
+
     const doc = await firestoreGet(`users/${userUid}/apps/phishbuster`, token);
-    if (doc && doc.fields && doc.fields.dailyLimit) {
-      const limit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
-      await chrome.storage.sync.set({ userBaseLimit: limit });
-      return limit;
+    if (!doc || !doc.fields) return { planType: "free", dailyLimit: 10, planExpiresAt: null, role: "user" };
+
+    const f = doc.fields;
+    const role = f.role?.stringValue || "user";
+    let planType = f.planType?.stringValue || "free";
+    let planExpiresAt = f.planExpiresAt?.stringValue || null;
+    let dailyLimit = parseInt(f.dailyLimit?.integerValue) || PLAN_LIMITS[planType] || 10;
+
+    // Check expiry
+    if (planType !== "free" && planExpiresAt) {
+      if (new Date(planExpiresAt) < new Date()) {
+        planType = "free";
+        dailyLimit = PLAN_LIMITS.free;
+        planExpiresAt = null;
+      }
     }
-    return 10;
+
+    // Role override
+    if (role === "unlimited") {
+      dailyLimit = Infinity;
+    }
+
+    const plan = { planType, dailyLimit, planExpiresAt, role };
+    await chrome.storage.local.set({ cachedPlan: plan });
+    return plan;
   } catch {
-    const { userBaseLimit = 10 } = await chrome.storage.sync.get("userBaseLimit");
-    return userBaseLimit;
+    const { cachedPlan } = await chrome.storage.local.get("cachedPlan");
+    return cachedPlan || { planType: "free", dailyLimit: 10, planExpiresAt: null, role: "user" };
   }
 }
 
-async function updateFirestoreLimit(newLimit) {
-  const token = await getAuthToken();
-  const { userUid } = await chrome.storage.local.get("userUid");
-  if (!userUid) return;
-  await firestoreSet(`users/${userUid}/apps/phishbuster`, {
-    dailyLimit: { integerValue: String(newLimit) },
-  }, token);
-}
-
 async function createUserDoc(uid, email, token) {
-  // Create shared user profile
   await firestoreSet(`users/${uid}`, {
     email: { stringValue: email },
   }, token);
-  // Create phishbuster app access + config
   await firestoreSet(`users/${uid}/apps/phishbuster`, {
     enabled: { booleanValue: true },
     role: { stringValue: "user" },
     dailyLimit: { integerValue: "10" },
+    planType: { stringValue: "free" },
+    planExpiresAt: { stringValue: "" },
+    stripeCustomerId: { stringValue: "" },
+    lastPaymentId: { stringValue: "" },
   }, token);
 }
 
@@ -131,8 +146,6 @@ async function checkAppAccess(uid, token) {
 }
 
 // ── Daily usage (persisted in Firestore) ────────────────
-
-const ADD_MORE_AMOUNT = 15;
 
 function getTodayStr() {
   return new Date().toISOString().slice(0, 10);
@@ -167,10 +180,16 @@ async function saveDailyCount(count) {
 }
 
 async function getDailyUsage() {
-  const baseLimit = await fetchUserBaseLimit();
+  const plan = await fetchUserPlan();
   const count = await fetchDailyCount();
-  updateBadge(count, baseLimit);
-  return { count, limit: baseLimit, base: baseLimit };
+  updateBadge(count, plan.dailyLimit);
+  return {
+    count,
+    limit: plan.dailyLimit,
+    planType: plan.planType,
+    planExpiresAt: plan.planExpiresAt,
+    role: plan.role,
+  };
 }
 
 async function incrementDailyCount() {
@@ -181,17 +200,9 @@ async function incrementDailyCount() {
   return { count: newCount, limit: usage.limit };
 }
 
-async function handleAddMoreAnalyses() {
-  const usage = await getDailyUsage();
-  const newLimit = usage.base + ADD_MORE_AMOUNT;
-  try { await updateFirestoreLimit(newLimit); } catch {}
-  updateBadge(usage.count, newLimit);
-  return { count: usage.count, limit: newLimit };
-}
-
 function updateBadge(count, limit) {
   const text = String(count);
-  const color = count >= limit ? "#ef4444" : "#3b82f6";
+  const color = (limit !== Infinity && count >= limit) ? "#ef4444" : "#3b82f6";
   chrome.action.setBadgeText({ text });
   chrome.action.setBadgeBackgroundColor({ color });
 }
@@ -201,10 +212,26 @@ getDailyUsage().then(({ count, limit }) => updateBadge(count, limit));
 
 // ── API handlers ─────────────────────────────────────────
 
+async function handleCreateCheckout(data) {
+  const headers = await getAuthHeaders();
+  const response = await fetchWithTimeout(`${BACKEND_URL}/checkout`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ plan: data.plan }),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`Checkout failed: ${err}`);
+  }
+  const result = await response.json();
+  chrome.tabs.create({ url: result.url });
+  return { opened: true };
+}
+
 async function handleAnalyzeText(data) {
-  // Check daily limit
+  // Check daily limit (Infinity for unlimited users)
   const usage = await getDailyUsage();
-  if (usage.count >= usage.limit) {
+  if (usage.limit !== Infinity && usage.count >= usage.limit) {
     throw new Error("DAILY_LIMIT_REACHED");
   }
 
@@ -271,15 +298,6 @@ async function handleSignIn(data) {
     userEmail: result.email,
     userUid: result.localId,
   });
-
-  // Fetch and cache user's base limit from Firestore (app-specific)
-  try {
-    const doc = await firestoreGet(`users/${result.localId}/apps/phishbuster`, result.idToken);
-    if (doc && doc.fields && doc.fields.dailyLimit) {
-      const baseLimit = parseInt(doc.fields.dailyLimit.integerValue) || 10;
-      await chrome.storage.sync.set({ userBaseLimit: baseLimit });
-    }
-  } catch {}
 
   return { email: result.email };
 }
@@ -367,8 +385,7 @@ async function handleResendVerification(data) {
 }
 
 async function handleSignOut() {
-  await chrome.storage.local.remove(["authToken", "refreshToken", "tokenExpiry", "userEmail", "userUid"]);
-  await chrome.storage.sync.remove(["userBaseLimit"]);
+  await chrome.storage.local.remove(["authToken", "refreshToken", "tokenExpiry", "userEmail", "userUid", "cachedPlan"]);
   chrome.action.setBadgeText({ text: "" });
   return { success: true };
 }
@@ -394,7 +411,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     signOut: () => handleSignOut(),
     getUser: () => handleGetUser(),
     getDailyUsage: () => getDailyUsage(),
-    addMoreAnalyses: () => handleAddMoreAnalyses(),
+    createCheckout: () => handleCreateCheckout(message),
   };
 
   const handler = handlers[message.action];

@@ -26,4 +26,10 @@ def create_app():
         from flask import render_template
         return render_template("privacy-policy.html")
 
+    @app.route("/payment")
+    def payment_result():
+        from flask import render_template, request as req
+        result = req.args.get("result", "cancelled")
+        return render_template("payment.html", result=result)
+
     return app

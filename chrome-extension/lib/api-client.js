@@ -35,7 +35,7 @@ const PhishingAPI = {
     return this._send({ action: "getDailyUsage" });
   },
 
-  addMoreAnalyses() {
-    return this._send({ action: "addMoreAnalyses" });
+  createCheckout(plan) {
+    return this._send({ action: "createCheckout", plan });
   },
 };

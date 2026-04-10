@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "PhishBuster",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Automatically analyzes emails in Gmail for phishing indicators using a local analysis backend.",
   "permissions": ["storage"],
   "host_permissions": [

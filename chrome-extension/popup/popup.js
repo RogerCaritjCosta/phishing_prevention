@@ -34,9 +34,14 @@ const POPUP_I18N = {
     connected: "Connected",
     backend_unreachable: "Backend unreachable",
     analyses_today: "analyses today",
-    add_more: "+ 15 more",
-    adding: "Adding...",
-    added_more: "+15 analyses added",
+    plan_free: "Free",
+    plan_basic: "Basic",
+    plan_pro: "Pro",
+    plan_unlimited: "Unlimited",
+    plan_expires: "Active until",
+    upgrade_basic: "Basic \u2014 50/day \u2014 1\u20AC/month",
+    upgrade_pro: "Pro \u2014 250/day \u2014 3\u20AC/month",
+    opening_checkout: "Opening checkout...",
     language: "Language",
     save: "Save",
     settings_saved: "Settings saved",
@@ -78,9 +83,14 @@ const POPUP_I18N = {
     connected: "Conectado",
     backend_unreachable: "Backend no disponible",
     analyses_today: "análisis hoy",
-    add_more: "+ 15 más",
-    adding: "Añadiendo...",
-    added_more: "+15 análisis añadidos",
+    plan_free: "Gratis",
+    plan_basic: "Basic",
+    plan_pro: "Pro",
+    plan_unlimited: "Ilimitado",
+    plan_expires: "Activo hasta",
+    upgrade_basic: "Basic \u2014 50/d\u00EDa \u2014 1\u20AC/mes",
+    upgrade_pro: "Pro \u2014 250/d\u00EDa \u2014 3\u20AC/mes",
+    opening_checkout: "Abriendo pago...",
     language: "Idioma",
     save: "Guardar",
     settings_saved: "Ajustes guardados",
@@ -122,9 +132,14 @@ const POPUP_I18N = {
     connected: "Connectat",
     backend_unreachable: "Backend no disponible",
     analyses_today: "anàlisis avui",
-    add_more: "+ 15 més",
-    adding: "Afegint...",
-    added_more: "+15 anàlisis afegides",
+    plan_free: "Gratu\u00EFt",
+    plan_basic: "Basic",
+    plan_pro: "Pro",
+    plan_unlimited: "Il\u00B7limitat",
+    plan_expires: "Actiu fins",
+    upgrade_basic: "Basic \u2014 50/dia \u2014 1\u20AC/mes",
+    upgrade_pro: "Pro \u2014 250/dia \u2014 3\u20AC/mes",
+    opening_checkout: "Obrint pagament...",
     language: "Idioma",
     save: "Desar",
     settings_saved: "Ajustos desats",
@@ -185,10 +200,12 @@ const csvMsg        = $("csvMsg");
 const domainList    = $("domainList");
 const domainInput   = $("domainInput");
 const addDomainBtn  = $("addDomainBtn");
-const quotaCount    = $("quotaCount");
-const quotaLimit    = $("quotaLimit");
-const quotaFill     = $("quotaFill");
-const addMoreBtn    = $("addMoreBtn");
+const quotaCount      = $("quotaCount");
+const quotaLimit      = $("quotaLimit");
+const quotaFill       = $("quotaFill");
+const planBadge       = $("planBadge");
+const planExpiry      = $("planExpiry");
+const upgradeButtons  = $("upgradeButtons");
 
 // ── Auth state ───────────────────────────────────────────
 let authMode = "login"; // "login" or "register"
@@ -573,21 +590,23 @@ async function loadDailyUsage() {
   try {
     const usage = await sendMsg("getDailyUsage");
     renderQuota(usage.count, usage.limit);
+    renderPlanInfo(usage.planType, usage.planExpiresAt, usage.role);
   } catch {
-    renderQuota(0, 15);
+    renderQuota(0, 10);
+    renderPlanInfo("free", null, "user");
   }
 }
 
 function renderQuota(count, limit) {
   quotaCount.textContent = count;
-  quotaLimit.textContent = limit;
-  const pct = Math.min((count / limit) * 100, 100);
+  quotaLimit.textContent = limit === Infinity ? "\u221E" : limit;
+  const pct = limit === Infinity ? 0 : Math.min((count / limit) * 100, 100);
   quotaFill.style.width = `${pct}%`;
   quotaFill.className = "phd-popup__quota-fill";
-  if (pct >= 100) {
+  if (limit !== Infinity && pct >= 100) {
     quotaFill.classList.add("phd-popup__quota-fill--full");
     quotaCount.style.color = "#ef4444";
-  } else if (pct >= 70) {
+  } else if (limit !== Infinity && pct >= 70) {
     quotaFill.classList.add("phd-popup__quota-fill--warn");
     quotaCount.style.color = "#f59e0b";
   } else {
@@ -595,19 +614,54 @@ function renderQuota(count, limit) {
   }
 }
 
-addMoreBtn.addEventListener("click", async () => {
-  addMoreBtn.disabled = true;
-  addMoreBtn.textContent = t("adding");
-  try {
-    const usage = await sendMsg("addMoreAnalyses");
-    renderQuota(usage.count, usage.limit);
-    flash(t("added_more"), "ok");
-  } catch (err) {
-    flash(err.message, "err");
-  } finally {
-    addMoreBtn.disabled = false;
-    addMoreBtn.textContent = t("add_more");
+function renderPlanInfo(planType, planExpiresAt, role) {
+  if (role === "unlimited") {
+    planBadge.textContent = t("plan_unlimited");
+    planBadge.className = "phd-popup__plan-badge phd-popup__plan-badge--unlimited";
+    planExpiry.textContent = "";
+    upgradeButtons.style.display = "none";
+    return;
   }
+
+  const labels = { free: t("plan_free"), basic: t("plan_basic"), pro: t("plan_pro") };
+  planBadge.textContent = labels[planType] || labels.free;
+  planBadge.className = `phd-popup__plan-badge phd-popup__plan-badge--${planType || "free"}`;
+
+  if (planExpiresAt && planType !== "free") {
+    const d = new Date(planExpiresAt);
+    planExpiry.textContent = `${t("plan_expires")}: ${d.toLocaleDateString()}`;
+    planExpiry.style.color = "#16a34a";
+  } else {
+    planExpiry.textContent = "";
+  }
+
+  if (planType === "pro") {
+    upgradeButtons.style.display = "none";
+  } else {
+    upgradeButtons.style.display = "";
+    const basicBtn = upgradeButtons.querySelector('[data-plan="basic"]');
+    const proBtn = upgradeButtons.querySelector('[data-plan="pro"]');
+    basicBtn.style.display = planType === "basic" ? "none" : "";
+    proBtn.style.display = "";
+  }
+}
+
+// ── Upgrade buttons ─────────────────────────────────────
+document.querySelectorAll(".phd-popup__upgrade-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const plan = btn.dataset.plan;
+    btn.disabled = true;
+    const origText = btn.textContent;
+    btn.textContent = t("opening_checkout");
+    try {
+      await sendMsg("createCheckout", { plan });
+    } catch (err) {
+      flash(err.message, "err");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = origText;
+    }
+  });
 });
 
 function removeDomain(domain) {
