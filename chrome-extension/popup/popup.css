@@ -244,7 +244,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 6px;
 }
 
 .phd-popup__upgrade-btn {
@@ -428,6 +427,12 @@ body {
 }
 .phd-popup__card-header.phd-popup__card-header--open .phd-popup__card-arrow {
   transform: rotate(180deg);
+}
+
+.phd-popup__card-count {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 11px;
 }
 
 .phd-popup__card-body {

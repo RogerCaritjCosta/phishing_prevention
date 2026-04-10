@@ -39,12 +39,10 @@ const POPUP_I18N = {
     plan_pro: "Pro",
     plan_unlimited: "Unlimited",
     plan_expires: "Active until",
+    upgrade_plan: "Upgrade your plan",
     upgrade_basic: "Basic \u2014 50/day \u2014 1\u20AC (one-time)",
     upgrade_pro: "Pro \u2014 250/day \u2014 3\u20AC (one-time)",
     opening_checkout: "Opening checkout...",
-    language: "Language",
-    save: "Save",
-    settings_saved: "Settings saved",
     trusted_senders: "Trusted senders",
     no_trusted_senders: "No trusted senders yet",
     already_trusted: "Already trusted",
@@ -88,6 +86,7 @@ const POPUP_I18N = {
     plan_pro: "Pro",
     plan_unlimited: "Ilimitado",
     plan_expires: "Activo hasta",
+    upgrade_plan: "Mejora tu plan",
     upgrade_basic: "Basic \u2014 50/d\u00EDa \u2014 1\u20AC (pago \u00FAnico)",
     upgrade_pro: "Pro \u2014 250/d\u00EDa \u2014 3\u20AC (pago \u00FAnico)",
     opening_checkout: "Abriendo pago...",
@@ -137,6 +136,7 @@ const POPUP_I18N = {
     plan_pro: "Pro",
     plan_unlimited: "Il\u00B7limitat",
     plan_expires: "Actiu fins",
+    upgrade_plan: "Millora el teu pla",
     upgrade_basic: "Basic \u2014 50/dia \u2014 1\u20AC (pagament \u00FAnic)",
     upgrade_pro: "Pro \u2014 250/dia \u2014 3\u20AC (pagament \u00FAnic)",
     opening_checkout: "Obrint pagament...",
@@ -204,7 +204,10 @@ const quotaLimit      = $("quotaLimit");
 const quotaFill       = $("quotaFill");
 const planBadge       = $("planBadge");
 const planExpiry      = $("planExpiry");
+const upgradeCard     = $("upgradeCard");
 const upgradeButtons  = $("upgradeButtons");
+const sendersCount    = $("sendersCount");
+const domainsCount    = $("domainsCount");
 
 // ── Auth state ───────────────────────────────────────────
 let authMode = "login"; // "login" or "register"
@@ -425,11 +428,13 @@ function setupCardToggle(toggleId, bodyId) {
     toggle.classList.toggle("phd-popup__card-header--open", !hidden);
   });
 }
+setupCardToggle("toggleUpgrade", "upgradeBody");
 setupCardToggle("toggleSenders", "sendersBody");
 setupCardToggle("toggleDomains", "domainsBody");
 
 // ── Trusted senders ──────────────────────────────────────
 function renderTrustedList(senders) {
+  sendersCount.textContent = senders && senders.length ? `(${senders.length})` : "";
   if (!senders || senders.length === 0) {
     trustedList.innerHTML = `<div class="phd-popup__trusted-empty">${t("no_trusted_senders")}</div>`;
     return;
@@ -522,6 +527,7 @@ csvFile.addEventListener("change", () => {
 
 // ── Trusted domains ──────────────────────────────────────
 function renderDomainList(domains) {
+  domainsCount.textContent = domains && domains.length ? `(${domains.length})` : "";
   if (!domains || domains.length === 0) {
     domainList.innerHTML = `<div class="phd-popup__trusted-empty">${t("no_trusted_domains")}</div>`;
     return;
@@ -629,7 +635,7 @@ function renderPlanInfo(planType, planExpiresAt, role) {
     planBadge.textContent = t("plan_unlimited");
     planBadge.className = "phd-popup__plan-badge phd-popup__plan-badge--unlimited";
     planExpiry.textContent = "";
-    upgradeButtons.style.display = "none";
+    upgradeCard.style.display = "none";
     return;
   }
 
@@ -646,9 +652,9 @@ function renderPlanInfo(planType, planExpiresAt, role) {
   }
 
   if (planType === "pro") {
-    upgradeButtons.style.display = "none";
+    upgradeCard.style.display = "none";
   } else {
-    upgradeButtons.style.display = "";
+    upgradeCard.style.display = "";
     const basicBtn = upgradeButtons.querySelector('[data-plan="basic"]');
     const proBtn = upgradeButtons.querySelector('[data-plan="pro"]');
     basicBtn.style.display = planType === "basic" ? "none" : "";

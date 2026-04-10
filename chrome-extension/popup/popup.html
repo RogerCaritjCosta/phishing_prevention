@@ -67,9 +67,18 @@
         <div class="phd-popup__quota-bar">
           <div class="phd-popup__quota-fill" id="quotaFill"></div>
         </div>
-        <div class="phd-popup__upgrade-buttons" id="upgradeButtons">
-          <button class="phd-popup__upgrade-btn" data-plan="basic" data-i18n="upgrade_basic">Basic &mdash; 50/day &mdash; 1&euro;</button>
-          <button class="phd-popup__upgrade-btn phd-popup__upgrade-btn--pro" data-plan="pro" data-i18n="upgrade_pro">Pro &mdash; 250/day &mdash; 3&euro;</button>
+      </div>
+
+      <div class="phd-popup__card" id="upgradeCard">
+        <button class="phd-popup__card-header" id="toggleUpgrade">
+          <span data-i18n="upgrade_plan">Upgrade your plan</span>
+          <span class="phd-popup__card-arrow">&#x25BC;</span>
+        </button>
+        <div class="phd-popup__card-body phd-popup__card-body--hidden" id="upgradeBody">
+          <div class="phd-popup__upgrade-buttons" id="upgradeButtons">
+            <button class="phd-popup__upgrade-btn" data-plan="basic" data-i18n="upgrade_basic">Basic &mdash; 50/day &mdash; 1&euro;</button>
+            <button class="phd-popup__upgrade-btn phd-popup__upgrade-btn--pro" data-plan="pro" data-i18n="upgrade_pro">Pro &mdash; 250/day &mdash; 3&euro;</button>
+          </div>
         </div>
       </div>
 
@@ -77,7 +86,7 @@
 
       <div class="phd-popup__card">
         <button class="phd-popup__card-header" id="toggleSenders">
-          <span data-i18n="trusted_senders">Trusted senders</span>
+          <span><span data-i18n="trusted_senders">Trusted senders</span> <span class="phd-popup__card-count" id="sendersCount"></span></span>
           <span class="phd-popup__card-arrow">&#x25BC;</span>
         </button>
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="sendersBody">
@@ -96,7 +105,7 @@
 
       <div class="phd-popup__card">
         <button class="phd-popup__card-header" id="toggleDomains">
-          <span data-i18n="trusted_domains">Trusted domains</span>
+          <span><span data-i18n="trusted_domains">Trusted domains</span> <span class="phd-popup__card-count" id="domainsCount"></span></span>
           <span class="phd-popup__card-arrow">&#x25BC;</span>
         </button>
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="domainsBody">
