@@ -314,6 +314,10 @@ async function lookupEmailVerified(idToken) {
 }
 
 async function handleSignUp(data) {
+  if (data.email && data.email.includes("+")) {
+    throw new Error("INVALID_EMAIL");
+  }
+
   const resp = await fetch(
     `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
     {
