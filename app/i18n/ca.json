@@ -21,5 +21,8 @@
   "risk_low": "Baix",
   "risk_medium": "Mitjà",
   "risk_high": "Alt",
-  "risk_critical": "Crític"
+  "risk_critical": "Crític",
+  "skipped_trusted_sender": "Aquest email no ha estat analitzat perquè el remitent és a la teva llista de confiança.",
+  "skipped_trusted_domain": "Aquest email no ha estat analitzat perquè el domini és a la teva llista de confiança.",
+  "analyze_anyway": "Analitzar igualment"
 }

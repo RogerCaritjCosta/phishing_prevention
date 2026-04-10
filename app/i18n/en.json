@@ -21,5 +21,8 @@
   "risk_low": "Low",
   "risk_medium": "Medium",
   "risk_high": "High",
-  "risk_critical": "Critical"
+  "risk_critical": "Critical",
+  "skipped_trusted_sender": "This email was not analyzed because the sender is on your trusted list.",
+  "skipped_trusted_domain": "This email was not analyzed because the domain is on your trusted list.",
+  "analyze_anyway": "Analyze anyway"
 }
