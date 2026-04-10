@@ -244,6 +244,32 @@ body {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
 }
 
+.phd-popup__lang-group {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+.phd-popup__lang-btn {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-right: 1px solid #cbd5e1;
+}
+.phd-popup__lang-btn:last-child {
+  border-right: none;
+}
+.phd-popup__lang-btn--active {
+  background: #3b82f6;
+  color: #fff;
+}
+
 .phd-popup__save {
   display: block;
   width: 100%;

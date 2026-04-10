@@ -59,12 +59,12 @@
         <button id="addMoreBtn" class="phd-popup__add-more">+ 15 more</button>
       </div>
 
-      <label class="phd-popup__label" for="language">Language</label>
-      <select id="language" class="phd-popup__select">
-        <option value="en">English</option>
-        <option value="es">Espa&ntilde;ol</option>
-        <option value="ca">Catal&agrave;</option>
-      </select>
+      <label class="phd-popup__label">Language</label>
+      <div class="phd-popup__lang-group" id="langGroup">
+        <button class="phd-popup__lang-btn phd-popup__lang-btn--active" data-lang="en">English</button>
+        <button class="phd-popup__lang-btn" data-lang="es">Espa&ntilde;ol</button>
+        <button class="phd-popup__lang-btn" data-lang="ca">Catal&agrave;</button>
+      </div>
 
       <button id="saveBtn" class="phd-popup__save">Save</button>
       <div id="saveMsg" class="phd-popup__msg"></div>

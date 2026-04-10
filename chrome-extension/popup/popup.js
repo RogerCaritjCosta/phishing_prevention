@@ -20,7 +20,7 @@ const verifyMsg      = $("verifyMsg");
 const backToLoginBtn = $("backToLoginBtn");
 
 // ── App elements ─────────────────────────────────────────
-const langSelect    = $("language");
+const langGroup     = $("langGroup");
 const saveBtn       = $("saveBtn");
 const saveMsg       = $("saveMsg");
 const statusDot     = $("statusDot");
@@ -88,7 +88,7 @@ function showApp(email) {
   chrome.storage.sync.get(
     { language: "en", trustedSenders: [], trustedDomains: [] },
     (items) => {
-      langSelect.value = items.language;
+      setActiveLang(items.language);
       checkHealth();
       loadDailyUsage();
       renderTrustedList(items.trustedSenders);
@@ -189,9 +189,27 @@ logoutBtn.addEventListener("click", async () => {
   showAuth();
 });
 
+// ── Language selector ────────────────────────────────────
+function getActiveLang() {
+  const active = langGroup.querySelector(".phd-popup__lang-btn--active");
+  return active ? active.dataset.lang : "en";
+}
+
+function setActiveLang(lang) {
+  langGroup.querySelectorAll(".phd-popup__lang-btn").forEach((btn) => {
+    btn.classList.toggle("phd-popup__lang-btn--active", btn.dataset.lang === lang);
+  });
+}
+
+langGroup.addEventListener("click", (e) => {
+  const btn = e.target.closest(".phd-popup__lang-btn");
+  if (!btn) return;
+  setActiveLang(btn.dataset.lang);
+});
+
 // ── Save settings ────────────────────────────────────────
 saveBtn.addEventListener("click", () => {
-  const language = langSelect.value;
+  const language = getActiveLang();
   chrome.storage.sync.set({ language }, () => {
     flash("Settings saved", "ok");
     chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
