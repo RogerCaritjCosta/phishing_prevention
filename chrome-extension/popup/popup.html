@@ -78,10 +78,12 @@
           </div>
           <div class="phd-popup__csv-row">
             <button id="csvBtn" class="phd-popup__icon-btn" title="Import CSV">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span data-i18n="import_csv">Import</span>
             </button>
             <button id="exportBtn" class="phd-popup__icon-btn" title="Export CSV">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span data-i18n="export_csv">Export</span>
             </button>
             <input type="file" id="csvFile" accept=".csv,.txt" hidden>
             <span id="csvMsg" class="phd-popup__csv-msg"></span>
@@ -97,6 +99,7 @@
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="domainsBody">
           <div id="domainList" class="phd-popup__trusted-list"></div>
           <div class="phd-popup__trusted-add">
+            <span class="phd-popup__input-prefix">@</span>
             <input type="text" id="domainInput" class="phd-popup__input" placeholder="example.com">
             <button id="addDomainBtn" class="phd-popup__add-btn">+</button>
           </div>

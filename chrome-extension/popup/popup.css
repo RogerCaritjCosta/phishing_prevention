@@ -473,15 +473,23 @@ body {
   border: none;
   color: #94a3b8;
   cursor: pointer;
-  padding: 4px;
+  padding: 3px 6px;
   border-radius: 4px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
 }
 .phd-popup__icon-btn:hover {
   color: #3b82f6;
   background: #f1f5f9;
+}
+
+.phd-popup__input-prefix {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .phd-popup__csv-msg {
