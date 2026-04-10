@@ -60,6 +60,46 @@ body {
   color: #fff;
 }
 
+.phd-popup__divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  color: #94a3b8;
+  font-size: 11px;
+}
+.phd-popup__divider::before,
+.phd-popup__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.phd-popup__google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+}
+.phd-popup__google-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+.phd-popup__google-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .phd-popup__password-wrap {
   position: relative;
   display: flex;

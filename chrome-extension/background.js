@@ -2,6 +2,7 @@ const BACKEND_URL = "https://phishing-prevention-1-vqvj.onrender.com/api/v1";
 const FIREBASE_API_KEY = "AIzaSyBrXR9gC0Iw66XuItJmQYzU8e0yNgVgmLM";
 const FIREBASE_PROJECT_ID = "universal-login-hub";
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
+const GOOGLE_CLIENT_ID = ""; // TODO: Set from Firebase Console → Auth → Google → Web client ID
 
 function fetchWithTimeout(url, options, timeoutMs = 60000) {
   return Promise.race([
@@ -383,6 +384,71 @@ async function handleResendVerification(data) {
   return { sent: true };
 }
 
+async function handleGoogleSignIn() {
+  if (!GOOGLE_CLIENT_ID) throw new Error("Google Sign-In not configured");
+
+  const redirectUrl = chrome.identity.getRedirectURL();
+  const nonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&` +
+    `response_type=id_token&` +
+    `redirect_uri=${encodeURIComponent(redirectUrl)}&` +
+    `scope=openid%20email%20profile&` +
+    `nonce=${nonce}&` +
+    `prompt=select_account`;
+
+  const responseUrl = await chrome.identity.launchWebAuthFlow({
+    url: authUrl,
+    interactive: true,
+  });
+
+  // Extract id_token from URL fragment
+  const fragment = responseUrl.split("#")[1];
+  if (!fragment) throw new Error("Google Sign-In failed: no response");
+  const params = new URLSearchParams(fragment);
+  const googleIdToken = params.get("id_token");
+  if (!googleIdToken) throw new Error("Google Sign-In failed: no token");
+
+  // Exchange Google ID token for Firebase token
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FIREBASE_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        postBody: `id_token=${googleIdToken}&providerId=google.com`,
+        requestUri: redirectUrl,
+        returnSecureToken: true,
+        returnIdpCredential: true,
+      }),
+    }
+  );
+  const result = await resp.json();
+  if (result.error) throw new Error(result.error.message);
+
+  const isNewUser = result.isNewUser === true;
+
+  // Create Firestore doc for new users
+  if (isNewUser) {
+    try {
+      await createUserDoc(result.localId, result.email, result.idToken);
+    } catch {}
+  }
+
+  // Check app access
+  await checkAppAccess(result.localId, result.idToken);
+
+  await chrome.storage.local.set({
+    authToken: result.idToken,
+    refreshToken: result.refreshToken,
+    tokenExpiry: Date.now() + parseInt(result.expiresIn) * 1000,
+    userEmail: result.email,
+    userUid: result.localId,
+  });
+
+  return { email: result.email };
+}
+
 async function handleSignOut() {
   await chrome.storage.local.remove(["authToken", "refreshToken", "tokenExpiry", "userEmail", "userUid", "cachedPlan"]);
   chrome.action.setBadgeText({ text: "" });
@@ -406,6 +472,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     healthCheck: () => handleHealthCheck(),
     signIn: () => handleSignIn(message),
     signUp: () => handleSignUp(message),
+    googleSignIn: () => handleGoogleSignIn(),
     resendVerification: () => handleResendVerification(message),
     signOut: () => handleSignOut(),
     getUser: () => handleGetUser(),

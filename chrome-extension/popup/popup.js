@@ -29,6 +29,8 @@ const POPUP_I18N = {
     resend_rate_limit: "Too many attempts. Please wait 15-60 minutes before trying again, and check your spam folder.",
     resend_go_back: "Please go back and log in again",
     back_to_login: "Back to login",
+    or: "or",
+    google_signin: "Sign in with Google",
     logout: "Log out",
     checking: "Checking...",
     connected: "Connected",
@@ -76,6 +78,8 @@ const POPUP_I18N = {
     resend_rate_limit: "Demasiados intentos. Espera 15-60 minutos e inténtalo de nuevo. Revisa tu carpeta de spam.",
     resend_go_back: "Vuelve atrás e inicia sesión de nuevo",
     back_to_login: "Volver al inicio de sesión",
+    or: "o",
+    google_signin: "Iniciar sesión con Google",
     logout: "Cerrar sesión",
     checking: "Comprobando...",
     connected: "Conectado",
@@ -126,6 +130,8 @@ const POPUP_I18N = {
     resend_rate_limit: "Massa intents. Espera 15-60 minuts i torna-ho a provar. Revisa la carpeta de spam.",
     resend_go_back: "Torna enrere i inicia sessió de nou",
     back_to_login: "Tornar a l'inici de sessió",
+    or: "o",
+    google_signin: "Iniciar sessió amb Google",
     logout: "Tancar sessió",
     checking: "Comprovant...",
     connected: "Connectat",
@@ -350,6 +356,22 @@ authBtn.addEventListener("click", async () => {
 
 authPassword.addEventListener("keydown", (e) => {
   if (e.key === "Enter") authBtn.click();
+});
+
+// ── Google Sign-In ──────────────────────────────────────
+const googleBtn = $("googleBtn");
+googleBtn.addEventListener("click", async () => {
+  googleBtn.disabled = true;
+  authMsg.textContent = "";
+  try {
+    const result = await sendMsg("googleSignIn");
+    showApp(result.email);
+  } catch (err) {
+    authMsg.textContent = err.message;
+    authMsg.className = "phd-popup__msg phd-popup__msg--err";
+  } finally {
+    googleBtn.disabled = false;
+  }
 });
 
 // ── Toggle password visibility ──────────────────────────
