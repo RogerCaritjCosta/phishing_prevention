@@ -16,7 +16,8 @@
   let currentSender = null;  // sender of the currently displayed email
   let trustedSenders = [];   // list of trusted sender addresses
   let trustedDomains = [];   // list of trusted domains
-  let skipTrustedAnalysis = false;
+  let skipSenders = false;
+  let skipDomains = false;
   let debounceTimer = null;
   let observer = null;
 
@@ -274,12 +275,24 @@
     return `<div class="phd-no-alarms">${t("no_alarms", "No phishing indicators detected.")}</div>`;
   }
 
+  function shouldSkipSender(sender) {
+    if (!sender) return false;
+    const s = sender.toLowerCase();
+    if (skipSenders && trustedSenders.some((ts) => ts.toLowerCase() === s)) return "sender";
+    if (skipDomains) {
+      const match = s.match(/@([\w.-]+)$/);
+      if (match && trustedDomains.some((td) => td.toLowerCase() === match[1])) return "domain";
+    }
+    return false;
+  }
+
   function renderSkippedBanner(sender, onAnalyze) {
+    const skipType = shouldSkipSender(sender);
     const el = document.createElement("div");
     el.className = "phd-banner phd-banner--trusted";
-    const msg = isTrustedSender(sender)
-      ? t("skipped_trusted_sender", "This email was not analyzed because the sender is on your trusted list.")
-      : t("skipped_trusted_domain", "This email was not analyzed because the domain is on your trusted list.");
+    const msg = skipType === "domain"
+      ? t("skipped_trusted_domain", "This email was not analyzed because the domain is on your trusted list.")
+      : t("skipped_trusted_sender", "This email was not analyzed because the sender is on your trusted list.");
     el.innerHTML = `
       <div class="phd-header">
         <span class="phd-shield">&#x1F6E1;</span>
@@ -302,10 +315,11 @@
 
   function loadTrustedSenders() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get({ trustedSenders: [], trustedDomains: [], skipTrustedAnalysis: false }, (items) => {
+      chrome.storage.sync.get({ trustedSenders: [], trustedDomains: [], skipSenders: false, skipDomains: false }, (items) => {
         trustedSenders = items.trustedSenders;
         trustedDomains = items.trustedDomains;
-        skipTrustedAnalysis = items.skipTrustedAnalysis;
+        skipSenders = items.skipSenders;
+        skipDomains = items.skipDomains;
         resolve();
       });
     });
@@ -375,7 +389,7 @@
       const sender = extractSender();
       currentSender = sender;
 
-      if (!forced && skipTrustedAnalysis && isTrustedSender(sender)) {
+      if (!forced && shouldSkipSender(sender)) {
         renderSkippedBanner(sender, forceAnalyzeEmail);
         return;
       }
@@ -455,11 +469,12 @@
 
   async function loadSettings() {
     return new Promise((resolve) => {
-      chrome.storage.sync.get({ language: "en", trustedSenders: [], trustedDomains: [], skipTrustedAnalysis: false }, (items) => {
+      chrome.storage.sync.get({ language: "en", trustedSenders: [], trustedDomains: [], skipSenders: false, skipDomains: false }, (items) => {
         currentLang = items.language;
         trustedSenders = items.trustedSenders;
         trustedDomains = items.trustedDomains;
-        skipTrustedAnalysis = items.skipTrustedAnalysis;
+        skipSenders = items.skipSenders;
+        skipDomains = items.skipDomains;
         resolve();
       });
     });
@@ -520,8 +535,9 @@
           handleNavigation();
         }
       }
-      if (msg.action === "skipTrustedUpdated") {
-        skipTrustedAnalysis = msg.skipTrustedAnalysis;
+      if (msg.action === "skipSettingsUpdated") {
+        skipSenders = msg.skipSenders ?? skipSenders;
+        skipDomains = msg.skipDomains ?? skipDomains;
         const emailId = getEmailIdFromHash();
         if (emailId) {
           delete cache[emailId];

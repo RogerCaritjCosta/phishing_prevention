@@ -61,18 +61,17 @@
         </div>
       </div>
 
-      <label class="phd-popup__toggle-row">
-        <input type="checkbox" id="skipTrustedCheck" class="phd-popup__toggle-input">
-        <span class="phd-popup__toggle-slider"></span>
-        <span class="phd-popup__toggle-label" data-i18n="skip_trusted">Don't analyze trusted emails</span>
-      </label>
-
       <div class="phd-popup__card">
         <button class="phd-popup__card-header" id="toggleSenders">
           <span><span data-i18n="trusted_senders">Trusted senders</span> <span class="phd-popup__card-count" id="sendersCount"></span></span>
           <span class="phd-popup__card-arrow">&#x25BC;</span>
         </button>
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="sendersBody">
+          <label class="phd-popup__toggle-row">
+            <input type="checkbox" id="skipSendersCheck" class="phd-popup__toggle-input">
+            <span class="phd-popup__toggle-slider"></span>
+            <span class="phd-popup__toggle-label" data-i18n="skip_senders">Don't analyze</span>
+          </label>
           <div id="trustedList" class="phd-popup__trusted-list"></div>
           <div class="phd-popup__trusted-add">
             <input type="text" id="trustedInput" class="phd-popup__input" placeholder="email@example.com">
@@ -99,6 +98,11 @@
           <span class="phd-popup__card-arrow">&#x25BC;</span>
         </button>
         <div class="phd-popup__card-body phd-popup__card-body--hidden" id="domainsBody">
+          <label class="phd-popup__toggle-row">
+            <input type="checkbox" id="skipDomainsCheck" class="phd-popup__toggle-input">
+            <span class="phd-popup__toggle-slider"></span>
+            <span class="phd-popup__toggle-label" data-i18n="skip_domains">Don't analyze</span>
+          </label>
           <div id="domainList" class="phd-popup__trusted-list"></div>
           <div class="phd-popup__trusted-add">
             <span class="phd-popup__input-prefix">@</span>

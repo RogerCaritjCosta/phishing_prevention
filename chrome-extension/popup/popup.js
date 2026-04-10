@@ -45,7 +45,8 @@ const POPUP_I18N = {
     upgrade_basic: "Basic \u2014 50/day \u2014 1\u20AC (one-time)",
     upgrade_pro: "Pro \u2014 250/day \u2014 3\u20AC (one-time)",
     opening_checkout: "Opening checkout...",
-    skip_trusted: "Don't analyze trusted emails",
+    skip_senders: "Don't analyze",
+    skip_domains: "Don't analyze",
     trusted_senders: "Trusted senders",
     no_trusted_senders: "No trusted senders yet",
     already_trusted: "Already trusted",
@@ -99,7 +100,8 @@ const POPUP_I18N = {
     language: "Idioma",
     save: "Guardar",
     settings_saved: "Ajustes guardados",
-    skip_trusted: "No analizar emails de confianza",
+    skip_senders: "No analizar",
+    skip_domains: "No analizar",
     trusted_senders: "Remitentes de confianza",
     no_trusted_senders: "Sin remitentes de confianza",
     already_trusted: "Ya está en la lista",
@@ -153,7 +155,8 @@ const POPUP_I18N = {
     language: "Idioma",
     save: "Desar",
     settings_saved: "Ajustos desats",
-    skip_trusted: "No analitzar emails de confian\u00E7a",
+    skip_senders: "No analitzar",
+    skip_domains: "No analitzar",
     trusted_senders: "Remitents de confian\u00E7a",
     no_trusted_senders: "Sense remitents de confiança",
     already_trusted: "Ja està a la llista",
@@ -206,7 +209,8 @@ const upgradeCard     = $("upgradeCard");
 const upgradeButtons  = $("upgradeButtons");
 const sendersCount      = $("sendersCount");
 const domainsCount      = $("domainsCount");
-const skipTrustedCheck  = $("skipTrustedCheck");
+const skipSendersCheck  = $("skipSendersCheck");
+const skipDomainsCheck  = $("skipDomainsCheck");
 
 function sendMsg(action, data = {}) {
   return new Promise((resolve, reject) => {
@@ -243,7 +247,7 @@ function showApp(email) {
   userEmailEl.textContent = email;
 
   chrome.storage.sync.get(
-    { language: "en", trustedSenders: [], trustedDomains: [], skipTrustedAnalysis: false },
+    { language: "en", trustedSenders: [], trustedDomains: [], skipSenders: false, skipDomains: false },
     (items) => {
       currentLang = items.language;
       setActiveLang(items.language);
@@ -252,7 +256,8 @@ function showApp(email) {
       loadDailyUsage();
       renderTrustedList(items.trustedSenders);
       renderDomainList(items.trustedDomains);
-      skipTrustedCheck.checked = items.skipTrustedAnalysis;
+      skipSendersCheck.checked = items.skipSenders;
+      skipDomainsCheck.checked = items.skipDomains;
     }
   );
 }
@@ -330,17 +335,19 @@ function flash(text, type) {
   setTimeout(() => { saveMsg.textContent = ""; saveMsg.className = "phd-popup__msg"; }, 2500);
 }
 
-// ── Skip trusted toggle ─────────────────────────────────
-skipTrustedCheck.addEventListener("change", () => {
-  const val = skipTrustedCheck.checked;
-  chrome.storage.sync.set({ skipTrustedAnalysis: val }, () => {
+// ── Skip toggles ────────────────────────────────────────
+function syncSkipSettings() {
+  const settings = { skipSenders: skipSendersCheck.checked, skipDomains: skipDomainsCheck.checked };
+  chrome.storage.sync.set(settings, () => {
     chrome.tabs.query({ url: "https://mail.google.com/*" }, (tabs) => {
       for (const tab of tabs) {
-        chrome.tabs.sendMessage(tab.id, { action: "skipTrustedUpdated", skipTrustedAnalysis: val }).catch(() => {});
+        chrome.tabs.sendMessage(tab.id, { action: "skipSettingsUpdated", ...settings }).catch(() => {});
       }
     });
   });
-});
+}
+skipSendersCheck.addEventListener("change", syncSkipSettings);
+skipDomainsCheck.addEventListener("change", syncSkipSettings);
 
 // ── Collapsible cards ────────────────────────────────────
 function setupCardToggle(toggleId, bodyId) {
